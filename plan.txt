@@ -1,0 +1,36 @@
+i'm going to describe a game. i want to use some of the components from that ui package to make the ui for this game.
+
+i'll describe the game, please memorize the game details and then i'll ask you to perform some tasks.
+
+caravan - a game about guarding a fantasy world caravan as it moves across some fantasy silk road equivalent ending in a paradisical merchant city at the end of the line. on the way, you encounter hazards, enemies, raiders, monsters etc but also cool opportunities to explore ruins, trade with other merchants, recruit hirelings, and other miscellaneous experiences on the road.
+
+you start by creating a character, or randomly generating one, or maybe picking one of 3 randomly generated ones or creating your own if you prefer.
+
+you can be an orc, elf, human, dwarf, etc. and choose a character class like fighter, thief.
+
+you are presumed to be the head of the caravan. the caravan is also upgradeable, it can move faster with better pack animals, carry more stuff/goods, more people/hirelings, have higher defense or automated defenses, and so on.
+
+as you move through the game world you collect items, earn gold, treasures and goodies, upgrade your characters through experience and unique opportunities.
+
+if your caravan master ever dies, another character is promoted in his stead, and so on. if everyone dies, you lose. if you get to the end of the line, you win/retire and get a better score depending on how much treasure and stuff you bring with you.
+
+you start the game in a smallish town and can hire your initial set of hirelings, upgrades, items, etc similar to oregon trail. then you have to set out.
+
+you then have to choose from among a list of destinations with pros and cons. each destination will require you to traverse a wilderness, with different challenges. distances to destinations may vary. some destinations may be more distant, but take you closer to the final destination.
+
+each wilderness has a danger level, they tend to go up as you get closer to the end.
+
+after you choose a destination, the basic flow of th game is as follows:
+
+your group moves a certain distance towards the destination.
+
+you have a DAY encounter. some are mild, like game available to hunt or herbs to gather, etc. each encounter is one day. distances are also in days. encounters can involve other things though, like monsters, raids against the caravan, etc.
+
+you have to make strategic choices based on the skills and abilities of your party, which modify your chances of success.
+
+there are some more complicated types of encounters - like ruins you can explore by sending a certain number of party members in, or combat scenes where your party has to work together to fight off threats.
+
+NIGHT encunters happen afterward, and generally involve the inter-group dyanmics of your party. for example, elves can get mad at dwarves and force you to choose a side, and the disfavored side will leave. or, one party member decides to train another giving you some free skill boosts. stuff like that.
+
+the first task i want to perform is create classes to represent characters, items, the caravan itself, encounters, cities, shops within each city.
+

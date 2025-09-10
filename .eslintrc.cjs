@@ -1,0 +1,9 @@
+module.exports = {
+    extends: [
+        "eslint:recommended",
+        "plugin:prettier/recommended"
+    ],
+    rules: {
+        "prettier/prettier": ["error", { "tabWidth": 4, "useTabs": false }]
+    }
+}
