@@ -16,7 +16,7 @@ export class Action {
         cardAction,
         turnAction,
         targetCard,
-        targetCardIndices,
+        targetCardIndices
     }: {
         selectedCardIndices?: CardIndices | undefined;
         selectedCard?: UnitCard | undefined;

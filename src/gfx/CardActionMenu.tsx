@@ -6,14 +6,14 @@ import { gs } from "../classes/Game";
 
 //remember - can only be used by player
 export function CardActionMenu({
-    onAction,
+    onAction
 }: {
     onAction: (a: CardAction) => void;
 }) {
     const { selectedCardIndices } = useContext(UIStateContext);
     const selectedCardIndex = selectedCardIndices.getFirstIndex(
         Person.Player,
-        DeckArea.Hand,
+        DeckArea.Hand
     );
 
     if (selectedCardIndex == undefined) return <div />;
@@ -37,22 +37,22 @@ export function CardActionMenu({
             {
                 label: "Draw Card",
                 action: CardAction.Draw,
-                disabledReason: drawCardDisabledReason,
-            },
+                disabledReason: drawCardDisabledReason
+            }
         ];
     } else if (selectedCard.tapped) {
         buttons = [
             {
                 label: "No actions available",
                 disabledReason: "[Tapped]",
-                action: "",
-            },
+                action: ""
+            }
         ];
     } else {
         buttons = [
             { label: "Move", action: CardAction.Move },
             { label: "Retreat", action: CardAction.Retreat },
-            { label: "Attack", action: CardAction.Attack },
+            { label: "Attack", action: CardAction.Attack }
         ];
     }
 

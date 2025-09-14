@@ -16,8 +16,8 @@ export function TurnMenu({ onAction }: { onAction: (a: TurnAction) => void }) {
             disabledReason:
                 gs.board.turn == Person.Enemy
                     ? "[Waiting For Enemy]"
-                    : undefined,
-        },
+                    : undefined
+        }
     ];
 
     return (

@@ -15,17 +15,17 @@ export class Deck {
 
     constructor({
         unitCards,
-        generalCard,
+        generalCard
     }: {
         unitCards?: Set<UnitCard> | undefined;
         generalCard?: GeneralCard;
     } = {}) {
         if (!unitCards) unitCards = new Set();
         this.unitCards = new Set(
-            Array.from(unitCards).map((uc) => UnitCard.copy(uc)),
+            Array.from(unitCards).map((uc) => UnitCard.copy(uc))
         );
         this.generalCard = GeneralCard.copy(
-            generalCard || GENERAL_CARDS.GENERAL,
+            generalCard || GENERAL_CARDS.GENERAL
         );
         this.reserveStack = new Stack({ cards: [...this.unitCards] });
         this.hand = new Hand();

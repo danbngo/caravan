@@ -1,4 +1,3 @@
-import { Ability } from "./Ability";
 import { UnitCard } from "./UnitCard";
 
 export class GeneralCard extends UnitCard {
@@ -11,7 +10,7 @@ export class GeneralCard extends UnitCard {
         attack: number,
         rangedAttack: number,
         mp: number,
-        abilityNames: string[] = [],
+        abilityNames: string[] = []
     ) {
         super(name, hp, attack, rangedAttack, abilityNames);
         this.mp = mp;
@@ -25,7 +24,7 @@ export class GeneralCard extends UnitCard {
             card.attack,
             card.rangedAttack,
             card.maxMp,
-            [...card.abilityNames],
+            [...card.abilityNames]
         );
     }
 }

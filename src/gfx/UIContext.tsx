@@ -13,7 +13,7 @@ export const UIStateContext = createContext<UIState>({
     selectedCardIndices: new CardIndices(),
     targetableCardIndices: new CardIndices(),
     targetingAction: undefined,
-    setTargetingAction: (i?: CardAction | undefined) => console.log(i),
+    setTargetingAction: (i?: CardAction | undefined) => console.log(i)
 });
 
 export function UIStateContextProvider({ children }: { children: ReactNode }) {
@@ -29,7 +29,7 @@ export function UIStateContextProvider({ children }: { children: ReactNode }) {
                 selectedCardIndices: selectedCardIndicesRef.current,
                 targetingAction,
                 setTargetingAction,
-                targetableCardIndices: targetableCardIndicesRef.current,
+                targetableCardIndices: targetableCardIndicesRef.current
             }}
         >
             {children}

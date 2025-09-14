@@ -19,19 +19,19 @@ export class AI {
 
     calcPotentialActions() {
         const actions: Action[] = [];
-        const { playerDeck, enemyDeck, enemyCardDrawn } = this.board;
+        const { enemyDeck, enemyCardDrawn } = this.board;
         enemyDeck.hand.cards.forEach((card, handIndex) => {
             const selectedCardIndices = new CardIndices();
             selectedCardIndices.addIndices(Person.Enemy, DeckArea.Hand, [
-                handIndex,
+                handIndex
             ]);
             if (!card) {
                 if (!enemyCardDrawn) {
                     actions.push(
                         new Action({
                             cardAction: CardAction.Draw,
-                            selectedCardIndices,
-                        }),
+                            selectedCardIndices
+                        })
                     );
                 }
                 return;
@@ -40,15 +40,15 @@ export class AI {
             actions.push(
                 new Action({
                     cardAction: CardAction.Retreat,
-                    selectedCardIndices,
-                }),
+                    selectedCardIndices
+                })
             );
             const validMoveIndices = this.board
                 .calcTargetableIndices(
                     Person.Enemy,
                     handIndex,
                     card,
-                    CardAction.Move,
+                    CardAction.Move
                 )
                 .split();
             for (const i of validMoveIndices) {
@@ -56,8 +56,8 @@ export class AI {
                     new Action({
                         cardAction: CardAction.Move,
                         selectedCardIndices,
-                        targetCardIndices: i,
-                    }),
+                        targetCardIndices: i
+                    })
                 );
             }
             const validAttackIndices = this.board
@@ -65,14 +65,14 @@ export class AI {
                     Person.Enemy,
                     handIndex,
                     card,
-                    CardAction.Attack,
+                    CardAction.Attack
                 )
                 .split();
             for (const i of validAttackIndices) {
                 actions.push({
                     cardAction: CardAction.Attack,
                     selectedCardIndices,
-                    targetCardIndices: i,
+                    targetCardIndices: i
                 });
             }
         });

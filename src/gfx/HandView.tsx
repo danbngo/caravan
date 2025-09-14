@@ -5,7 +5,7 @@ import { HandClickHandler } from "./interfaces";
 export function HandView({
     hand,
     onClick,
-    selectedCardIndex,
+    selectedCardIndex
 }: {
     hand: Hand;
     onClick?: HandClickHandler | undefined;

@@ -30,21 +30,19 @@ export class Game {
         const {
             cardAction,
             turnAction,
-            selectedCard,
             selectedCardIndices,
-            targetCard,
-            targetCardIndices,
+            targetCardIndices
         } = action;
         if (turnAction) this.board.processTurnAction(turnAction);
         else if (cardAction)
             this.board.processCardAction(
                 cardAction,
                 selectedCardIndices,
-                targetCardIndices,
+                targetCardIndices
             );
         else
             throw new Error(
-                "invalid action, must specify turnAction or cardAction",
+                "invalid action, must specify turnAction or cardAction"
             );
     }
 }

@@ -8,10 +8,10 @@ export function CardView({
     card,
     onClick,
     isSelected,
-    isTargeted,
+    isTargeted
 }: {
     card: UnitCard | GeneralCard | undefined;
-    onClick: CardClickHandler | undefined;
+    onClick?: CardClickHandler | undefined;
     isSelected?: boolean | undefined;
     isTargeted?: boolean | undefined;
 }) {

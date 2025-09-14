@@ -12,7 +12,7 @@ import { gs } from "../classes/Game";
 type OnActClickHandler = (
     person: Person,
     deckArea: DeckArea,
-    index?: number | undefined,
+    index?: number | undefined
 ) => void;
 
 export function CombatBoard() {
@@ -20,13 +20,13 @@ export function CombatBoard() {
         selectedCardIndices,
         targetableCardIndices,
         targetingAction,
-        setTargetingAction,
+        setTargetingAction
     } = useContext(UIStateContext);
 
     const { enemyDeck, playerDeck, messages, turn } = gs.board;
     const [refreshTrigger, setRefreshTrigger] = useState<number>();
     const onActClickHandlerRef = useRef<OnActClickHandler | undefined>(
-        undefined,
+        undefined
     );
 
     console.log(refreshTrigger);
@@ -58,7 +58,7 @@ export function CombatBoard() {
         onClickCard(
             Person.Player,
             DeckArea.Hand,
-            selectedCardIndices.getFirstIndex(Person.Player, DeckArea.Hand),
+            selectedCardIndices.getFirstIndex(Person.Player, DeckArea.Hand)
         );
         setRefreshTrigger(Math.random());
     }
@@ -92,7 +92,7 @@ export function CombatBoard() {
                         }
                         selectedCardIndex={selectedCardIndices.getFirstIndex(
                             Person.Enemy,
-                            DeckArea.Hand,
+                            DeckArea.Hand
                         )}
                     />
                     <div className="flex flex-row gap-4 overflow-x-auto p-2">
@@ -103,7 +103,7 @@ export function CombatBoard() {
                             }
                             isSelected={selectedCardIndices.hasAnyIndices(
                                 Person.Enemy,
-                                DeckArea.General,
+                                DeckArea.General
                             )}
                         />
                         <CardView
@@ -113,7 +113,7 @@ export function CombatBoard() {
                             }
                             isSelected={selectedCardIndices.hasAnyIndices(
                                 Person.Enemy,
-                                DeckArea.Reserves,
+                                DeckArea.Reserves
                             )}
                         />
                         <CardView
@@ -123,7 +123,7 @@ export function CombatBoard() {
                             }
                             isSelected={selectedCardIndices.hasAnyIndices(
                                 Person.Enemy,
-                                DeckArea.Hand,
+                                DeckArea.Hand
                             )}
                         />
                     </div>
@@ -137,7 +137,7 @@ export function CombatBoard() {
                         }
                         selectedCardIndex={selectedCardIndices.getFirstIndex(
                             Person.Player,
-                            DeckArea.Hand,
+                            DeckArea.Hand
                         )}
                     />
                     <div className="flex flex-row gap-4 overflow-x-auto p-2">
@@ -148,7 +148,7 @@ export function CombatBoard() {
                             }
                             isSelected={selectedCardIndices.hasAnyIndices(
                                 Person.Player,
-                                DeckArea.General,
+                                DeckArea.General
                             )}
                         />
                         <CardView
@@ -158,7 +158,7 @@ export function CombatBoard() {
                             }
                             isSelected={selectedCardIndices.hasAnyIndices(
                                 Person.Player,
-                                DeckArea.Reserves,
+                                DeckArea.Reserves
                             )}
                         />
                         <CardView
@@ -168,7 +168,7 @@ export function CombatBoard() {
                             }
                             isSelected={selectedCardIndices.hasAnyIndices(
                                 Person.Player,
-                                DeckArea.Hand,
+                                DeckArea.Hand
                             )}
                         />
                     </div>
@@ -179,7 +179,7 @@ export function CombatBoard() {
                         <div>{`${targetingAction}: Choose target`}</div>
                     ) : selectedCardIndices.hasAnyIndices(
                           Person.Player,
-                          DeckArea.Hand,
+                          DeckArea.Hand
                       ) && turn == Person.Player ? (
                         <CardActionMenu onAction={onClickCardAction} />
                     ) : (

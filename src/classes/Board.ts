@@ -15,7 +15,7 @@ export class Board {
 
     constructor({
         playerDeck,
-        enemyDeck,
+        enemyDeck
     }: { playerDeck?: Deck; enemyDeck?: Deck } = {}) {
         this.playerDeck = playerDeck || new Deck();
         this.enemyDeck = enemyDeck || new Deck();
@@ -58,7 +58,7 @@ export class Board {
             turnAction,
             cardAction,
             selectedCardIndices,
-            targetCardIndices,
+            targetCardIndices
         } = action;
         if (turnAction) {
             this.processTurnAction(turnAction);
@@ -66,7 +66,7 @@ export class Board {
             this.processCardAction(
                 cardAction,
                 selectedCardIndices,
-                targetCardIndices,
+                targetCardIndices
             );
         } else throw new Error("unrecognized action type");
     }
@@ -74,12 +74,12 @@ export class Board {
     processCardAction(
         action: CardAction,
         selectedCardIndices?: CardIndices | undefined,
-        targetCardIndices?: CardIndices | undefined,
+        targetCardIndices?: CardIndices | undefined
     ) {
         if (action == CardAction.Draw) {
             if (!selectedCardIndices)
                 throw new Error(
-                    "selectedCardIndices must be defined for this action!",
+                    "selectedCardIndices must be defined for this action!"
                 );
             this.processCardActionDraw(selectedCardIndices);
         } else if (action == CardAction.Move) {
@@ -90,7 +90,7 @@ export class Board {
         const { deck, person } = this.calcPersonMetadata(this.turn);
         const handIndex = selectedCardIndices.getFirstIndex(
             person,
-            DeckArea.Hand,
+            DeckArea.Hand
         );
         if (handIndex == undefined)
             throw new Error("hand index must be specified!");
@@ -122,7 +122,7 @@ export class Board {
         person: Person,
         handIndex: number,
         card: UnitCard,
-        action: CardAction,
+        action: CardAction
     ) {
         const { deck, opponent, opposingDeck } =
             this.calcPersonMetadata(person);

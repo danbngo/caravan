@@ -9,9 +9,12 @@ export function randomMemberOfArray<T>(arr: T[]): T {
     return arr[index]!;
 }
 
-export function randomizeArrayOrder<T>(arr: T[]) {
+export function randomizeArrayOrder<T>(arr: (T | undefined)[]) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [arr[i] as any, arr[j] as any] = [arr[j], arr[i]];
+        const k = arr[i];
+        const l = arr[j];
+        arr[i] = l;
+        arr[j] = k;
     }
 }

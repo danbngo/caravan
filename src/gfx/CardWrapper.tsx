@@ -7,7 +7,7 @@ export function CardWrapper({
     isSelected,
     isTargeted,
     title,
-    displayState,
+    displayState
 }: {
     onClick?: Function | undefined;
     isSelected?: boolean | undefined;

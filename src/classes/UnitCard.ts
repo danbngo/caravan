@@ -1,4 +1,4 @@
-import { ABILITIES, ALL_ABILITIES } from "../defs/ABILITIES";
+import { ALL_ABILITIES } from "../defs/ABILITIES";
 import { CardPosition } from "../enums";
 
 export class UnitCard {
@@ -16,7 +16,7 @@ export class UnitCard {
         hp: number,
         attack: number,
         rangedAttack: number,
-        abilityNames: string[] = [],
+        abilityNames: string[] = []
     ) {
         this.name = name;
         this.hp = hp;
@@ -38,7 +38,7 @@ export class UnitCard {
             card.maxHp,
             card.attack,
             card.rangedAttack,
-            [...card.abilityNames],
+            [...card.abilityNames]
         );
     }
 

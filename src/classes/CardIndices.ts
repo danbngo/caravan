@@ -18,7 +18,7 @@ export class CardIndices {
     private indices: CardIndicesMap;
 
     constructor({
-        indices = createEmptyCardIndicesMap(),
+        indices = createEmptyCardIndicesMap()
     }: { indices?: CardIndicesMap } = {}) {
         this.indices = indices;
     }

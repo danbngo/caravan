@@ -2,7 +2,7 @@ export function ActionButton({
     label,
     disabledReason,
     action,
-    onAction,
+    onAction
 }: {
     label: string;
     disabledReason?: string | undefined;

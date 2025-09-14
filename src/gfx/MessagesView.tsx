@@ -18,7 +18,7 @@ export function MessagesView({ messages }: { messages: string[] }) {
                 overflowY: "hidden",
                 overflowX: "hidden",
                 maxWidth: isExpanded ? "100%" : "35px",
-                width: isExpanded ? "100%" : "35px",
+                width: isExpanded ? "100%" : "35px"
             }}
             className="flex flex-col"
         >
@@ -38,7 +38,7 @@ export function MessagesView({ messages }: { messages: string[] }) {
                     maxHeight: "90vh",
                     height: "90vh",
                     overflowY: "hidden",
-                    display: isExpanded ? "block" : "none",
+                    display: isExpanded ? "block" : "none"
                 }}
             >
                 {messages.map((msg, index) => (

@@ -21,7 +21,7 @@ export function startTestGame() {
 
     gs.board = new Board({
         playerDeck: gs.playerDeck,
-        enemyDeck: makeRandomDeck(),
+        enemyDeck: makeRandomDeck()
     });
 
     gs.enemyAI = new AI({ board: gs.board });

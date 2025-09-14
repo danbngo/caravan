@@ -2,6 +2,7 @@ import { GeneralCard } from "../classes/GeneralCard";
 import { UnitCard } from "../classes/UnitCard";
 import { CardDisplayState, CardPosition } from "../enums";
 import { CardWrapper } from "./CardWrapper";
+import { CardClickHandler } from "./interfaces";
 import { LineSeparator } from "./LineSeperator";
 
 function calcDisplayState(card: UnitCard) {
@@ -15,10 +16,10 @@ export function UnitCardView({
     card,
     onClick,
     isSelected,
-    isTargeted,
+    isTargeted
 }: {
     card: UnitCard | GeneralCard;
-    onClick?: () => void | undefined;
+    onClick?: CardClickHandler | undefined;
     isSelected?: boolean | undefined;
     isTargeted?: boolean | undefined;
 }) {

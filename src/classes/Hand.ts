@@ -11,8 +11,8 @@ export class Hand {
     constructor(
         { cards, size }: { cards: (UnitCard | undefined)[]; size?: number } = {
             cards: [],
-            size: Hand.DEFAULT_HAND_SIZE,
-        },
+            size: Hand.DEFAULT_HAND_SIZE
+        }
     ) {
         this.cards = cards || [];
         this.size = size || Hand.DEFAULT_HAND_SIZE;

@@ -5,7 +5,7 @@ import { CardClickHandler } from "./interfaces";
 export function NoCardView({
     onClick,
     isSelected,
-    isTargeted,
+    isTargeted
 }: {
     onClick: CardClickHandler | undefined;
     isSelected?: boolean | undefined;
