@@ -57,6 +57,13 @@ export class Deck {
         return drawnCard;
     }
 
+    moveUnit(atHandIndex: number, toHandIndex: number) {
+        const cardAtIndex = this.hand.cards[atHandIndex];
+        const cardToIndex = this.hand.cards[toHandIndex];
+        this.hand.cards[atHandIndex] = cardToIndex;
+        this.hand.cards[toHandIndex] = cardAtIndex;
+    }
+
     withdrawUnit(atHandIndex: number) {
         const withdrawnCard = this.hand.cards[atHandIndex];
         if (!withdrawnCard) throw new Error("no card at given hand index!");

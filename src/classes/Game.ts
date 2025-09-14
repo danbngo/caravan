@@ -14,14 +14,14 @@ export class Game {
         this.enemyAI = new AI({ board: this.board });
     }
 
-    handleEnemyTurn(onEnemyActed: () => void) {
+    async handleEnemyTurn(beforeEnemyAction: () => Promise<void>) {
         if (!this.enemyAI) throw new Error("Enemy AI not loaded");
         let attemptsRemaining = 100;
         while (this.board.turn == Person.Enemy && attemptsRemaining-- > 0) {
+            await beforeEnemyAction();
             if (attemptsRemaining <= 0)
                 throw new Error("too many actions for enemy turn!");
             this.handleEnemyAction();
-            onEnemyActed();
         }
     }
 
@@ -30,15 +30,15 @@ export class Game {
         const {
             cardAction,
             turnAction,
-            selectedCardIndices,
-            targetCardIndices
+            selectedCardLocations,
+            targetCardLocations
         } = action;
         if (turnAction) this.board.processTurnAction(turnAction);
         else if (cardAction)
             this.board.processCardAction(
                 cardAction,
-                selectedCardIndices,
-                targetCardIndices
+                selectedCardLocations,
+                targetCardLocations
             );
         else
             throw new Error(

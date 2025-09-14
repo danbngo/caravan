@@ -17,8 +17,8 @@ type OnActClickHandler = (
 
 export function CombatBoard() {
     const {
-        selectedCardIndices,
-        targetableCardIndices,
+        selectedCardLocations,
+        targetedCardLocations,
         targetingAction,
         setTargetingAction
     } = useContext(UIStateContext);
@@ -29,37 +29,49 @@ export function CombatBoard() {
         undefined
     );
 
-    console.log(refreshTrigger);
-    //console.log('combat board re-render:', gs, enemyDeck, playerDeck, messages, turn)
+    console.log(
+        "combat board re-render:",
+        refreshTrigger,
+        gs,
+        enemyDeck,
+        playerDeck,
+        messages,
+        turn,
+        selectedCardLocations,
+        targetedCardLocations
+    );
 
     function onClickCard(person: Person, deckArea: DeckArea, index?: number) {
         console.log("combat board: card clicked", person, deckArea, index);
         if (onActClickHandlerRef.current)
             onActClickHandlerRef.current(person, deckArea, index);
-        else selectedCardIndices.setIndices(person, deckArea, [index || 0]);
+        else selectedCardLocations.setLocations(person, deckArea, [index || 0]);
         setRefreshTrigger(Math.random());
     }
 
     function onClickCardAction(action: CardAction) {
         console.log("combat board: card action clicked:", action);
-        //const selectedPlayerCardIndex = selectedCardIndices.getFirstIndex(Person.Player, DeckArea.Hand)
-        //if (selectedPlayerCardIndex == undefined) return
-        //need logic for all targetable abilities
+        const handIndex = selectedCardLocations.getFirstIndex(
+            Person.Player,
+            DeckArea.Hand
+        );
+
         if (action == CardAction.Move || action == CardAction.Attack) {
             setTargetingAction(action);
+            targetedCardLocations = gs.board.calcTargetableLocations(
+                Person.Player,
+                DeckArea.Hand,
+                handIndex
+            );
             onActClickHandlerRef.current = (p, d, i) => {
-                if (targetableCardIndices.hasIndex(p, d, i || 0)) {
-                    gs.board.processCardAction(action, selectedCardIndices);
+                if (targetedCardLocations.hasIndex(p, d, i || 0)) {
+                    gs.board.processCardAction(action, selectedCardLocations);
                     onActClickHandlerRef.current = undefined;
                 }
             };
-        } else gs.board.processCardAction(action, selectedCardIndices);
+        } else gs.board.processCardAction(action, selectedCardLocations);
         //reselect the acting card
-        onClickCard(
-            Person.Player,
-            DeckArea.Hand,
-            selectedCardIndices.getFirstIndex(Person.Player, DeckArea.Hand)
-        );
+        onClickCard(Person.Player, DeckArea.Hand, handIndex);
         setRefreshTrigger(Math.random());
     }
 
@@ -87,13 +99,15 @@ export function CombatBoard() {
                 <div className="flex w-full items-center justify-between p-4">
                     <HandView
                         hand={enemyDeck.hand}
+                        person={Person.Enemy}
                         onClick={(i) =>
                             onClickCard(Person.Enemy, DeckArea.Hand, i)
                         }
-                        selectedCardIndex={selectedCardIndices.getFirstIndex(
+                        selectedCardIndex={selectedCardLocations.getFirstIndex(
                             Person.Enemy,
                             DeckArea.Hand
                         )}
+                        targetedCardLocations={targetedCardLocations}
                     />
                     <div className="flex flex-row gap-4 overflow-x-auto p-2">
                         <CardView
@@ -101,7 +115,11 @@ export function CombatBoard() {
                             onClick={() =>
                                 onClickCard(Person.Enemy, DeckArea.General)
                             }
-                            isSelected={selectedCardIndices.hasAnyIndices(
+                            isSelected={selectedCardLocations.hasIndex(
+                                Person.Enemy,
+                                DeckArea.General
+                            )}
+                            isTargeted={targetedCardLocations.hasIndex(
                                 Person.Enemy,
                                 DeckArea.General
                             )}
@@ -111,7 +129,11 @@ export function CombatBoard() {
                             onClick={() =>
                                 onClickCard(Person.Enemy, DeckArea.Reserves)
                             }
-                            isSelected={selectedCardIndices.hasAnyIndices(
+                            isSelected={selectedCardLocations.hasIndex(
+                                Person.Enemy,
+                                DeckArea.Reserves
+                            )}
+                            isTargeted={targetedCardLocations.hasIndex(
                                 Person.Enemy,
                                 DeckArea.Reserves
                             )}
@@ -121,9 +143,13 @@ export function CombatBoard() {
                             onClick={() =>
                                 onClickCard(Person.Enemy, DeckArea.Grave)
                             }
-                            isSelected={selectedCardIndices.hasAnyIndices(
+                            isSelected={selectedCardLocations.hasIndex(
                                 Person.Enemy,
-                                DeckArea.Hand
+                                DeckArea.Grave
+                            )}
+                            isTargeted={targetedCardLocations.hasIndex(
+                                Person.Enemy,
+                                DeckArea.Grave
                             )}
                         />
                     </div>
@@ -132,10 +158,11 @@ export function CombatBoard() {
                 <div className="flex w-full items-center justify-between p-4">
                     <HandView
                         hand={playerDeck.hand}
+                        person={Person.Player}
                         onClick={(i) =>
                             onClickCard(Person.Player, DeckArea.Hand, i)
                         }
-                        selectedCardIndex={selectedCardIndices.getFirstIndex(
+                        selectedCardIndex={selectedCardLocations.getFirstIndex(
                             Person.Player,
                             DeckArea.Hand
                         )}
@@ -146,7 +173,11 @@ export function CombatBoard() {
                             onClick={() =>
                                 onClickCard(Person.Player, DeckArea.General)
                             }
-                            isSelected={selectedCardIndices.hasAnyIndices(
+                            isSelected={selectedCardLocations.hasIndex(
+                                Person.Player,
+                                DeckArea.General
+                            )}
+                            isTargeted={targetedCardLocations.hasIndex(
                                 Person.Player,
                                 DeckArea.General
                             )}
@@ -156,7 +187,11 @@ export function CombatBoard() {
                             onClick={() =>
                                 onClickCard(Person.Player, DeckArea.Reserves)
                             }
-                            isSelected={selectedCardIndices.hasAnyIndices(
+                            isSelected={selectedCardLocations.hasIndex(
+                                Person.Player,
+                                DeckArea.Reserves
+                            )}
+                            isTargeted={targetedCardLocations.hasIndex(
                                 Person.Player,
                                 DeckArea.Reserves
                             )}
@@ -166,9 +201,13 @@ export function CombatBoard() {
                             onClick={() =>
                                 onClickCard(Person.Player, DeckArea.Grave)
                             }
-                            isSelected={selectedCardIndices.hasAnyIndices(
+                            isSelected={selectedCardLocations.hasIndex(
                                 Person.Player,
-                                DeckArea.Hand
+                                DeckArea.Grave
+                            )}
+                            isTargeted={targetedCardLocations.hasIndex(
+                                Person.Player,
+                                DeckArea.Grave
                             )}
                         />
                     </div>
@@ -177,7 +216,7 @@ export function CombatBoard() {
                 <div className="flex w-full items-center justify-between p-4">
                     {targetingAction && turn == Person.Player ? (
                         <div>{`${targetingAction}: Choose target`}</div>
-                    ) : selectedCardIndices.hasAnyIndices(
+                    ) : selectedCardLocations.hasIndex(
                           Person.Player,
                           DeckArea.Hand
                       ) && turn == Person.Player ? (

@@ -1,8 +1,8 @@
 import { CardAction, DeckArea, Person, TurnAction } from "../enums";
-import { Action } from "./Action";
-import { CardIndices } from "./CardIndices";
+import { Action } from "../interfaces/Action";
+import { CardLocation } from "../interfaces/CardLocation";
+import { CardLocations } from "./CardLocations";
 import { Deck } from "./Deck";
-import { UnitCard } from "./UnitCard";
 
 export class Board {
     playerDeck: Deck;
@@ -54,47 +54,21 @@ export class Board {
     }
 
     processAction(action: Action) {
-        const {
-            turnAction,
-            cardAction,
-            selectedCardIndices,
-            targetCardIndices
-        } = action;
-        if (turnAction) {
-            this.processTurnAction(turnAction);
-        } else if (cardAction) {
-            this.processCardAction(
-                cardAction,
-                selectedCardIndices,
-                targetCardIndices
-            );
+        const { turnAction, cardAction } = action;
+        if (turnAction == TurnAction.EndTurn) {
+            this.nextTurn();
+        } else if (cardAction == CardAction.Draw) {
+            this.processCardActionDraw(action);
+        } else if (cardAction == CardAction.Move) {
+            this.processCardActionMove(action);
         } else throw new Error("unrecognized action type");
     }
 
-    processCardAction(
-        action: CardAction,
-        selectedCardIndices?: CardIndices | undefined,
-        targetCardIndices?: CardIndices | undefined
-    ) {
-        if (action == CardAction.Draw) {
-            if (!selectedCardIndices)
-                throw new Error(
-                    "selectedCardIndices must be defined for this action!"
-                );
-            this.processCardActionDraw(selectedCardIndices);
-        } else if (action == CardAction.Move) {
-        }
-    }
-
-    processCardActionDraw(selectedCardIndices: CardIndices) {
-        const { deck, person } = this.calcPersonMetadata(this.turn);
-        const handIndex = selectedCardIndices.getFirstIndex(
-            person,
-            DeckArea.Hand
-        );
-        if (handIndex == undefined)
-            throw new Error("hand index must be specified!");
-        const drawnCard = deck.drawUnit(handIndex);
+    processCardActionDraw(action: Action) {
+        const { selectedCardLocation } = action;
+        const { person, index } = selectedCardLocation;
+        const { deck } = this.calcPersonMetadata(person);
+        const drawnCard = deck.drawUnit(index);
         if (this.isPlayerTurn) {
             this.playerCardDrawn = true;
             this.addMessage(`You draw: ${drawnCard.name}.`);
@@ -104,9 +78,38 @@ export class Board {
         }
     }
 
-    processTurnAction(action: TurnAction) {
-        if (action == TurnAction.EndTurn) {
-            this.nextTurn();
+    processCardActionMove(action: Action) {
+        const {
+            selectedCardLocation,
+            targetCardLocation,
+            selectedCard,
+            targetCard
+        } = action;
+        const { person, index } = selectedCardLocation;
+        if (!selectedCard) throw new Error("selected card must be specified!");
+        const {deck} = this.calcPersonMetadata(person)
+
+        deck.moveUnit(selectedCardLocation.)
+
+
+        if (this.isPlayerTurn) {
+            this.playerCardDrawn = true;
+            if (targetCard) {
+                this.addMessage(
+                    `You swap places: ${selectedCard.name} with ${targetCard.name}.`
+                );
+            } else {
+                this.addMessage(`You move: ${selectedCard.name}.`);
+            }
+        } else {
+            this.enemyCardDrawn = true;
+            if (targetCard) {
+                this.addMessage(
+                    `Enemy swaps places: ${selectedCard.name} with ${targetCard.name}.`
+                );
+            } else {
+                this.addMessage(`Enemy moves: ${selectedCard.name}.`);
+            }
         }
     }
 
@@ -118,30 +121,29 @@ export class Board {
         return { person, opponent, deck, opposingDeck };
     }
 
-    calcTargetableIndices(
-        person: Person,
-        handIndex: number,
-        card: UnitCard,
+    calcTargetableLocations(
+        selectedCardLocation: CardLocation,
         action: CardAction
     ) {
+        const { person, index } = selectedCardLocation;
         const { deck, opponent, opposingDeck } =
             this.calcPersonMetadata(person);
-        const validIndices: CardIndices = new CardIndices();
+        const validLocations: CardLocations = new CardLocations();
         if (action == CardAction.Move) {
-            if (handIndex < 0) {
-                validIndices.addIndices(person, DeckArea.Hand, [handIndex - 1]);
+            if (index < 0) {
+                validLocations.addLocations(person, DeckArea.Hand, [index - 1]);
             }
-            if (handIndex < deck.hand.size - 1) {
-                validIndices.addIndices(person, DeckArea.Hand, [handIndex + 1]);
+            if (index < deck.hand.size - 1) {
+                validLocations.addLocations(person, DeckArea.Hand, [index + 1]);
             }
         }
         if (action == CardAction.Attack) {
-            if (opposingDeck.hand.cards[handIndex]) {
-                validIndices.addIndices(opponent, DeckArea.Hand, [handIndex]);
+            if (opposingDeck.hand.cards[index]) {
+                validLocations.addLocations(opponent, DeckArea.Hand, [index]);
             } else {
-                validIndices.addIndices(opponent, DeckArea.General, [0]);
+                validLocations.addLocations(opponent, DeckArea.General, [0]);
             }
         }
-        return validIndices;
+        return validLocations;
     }
 }

@@ -2,7 +2,7 @@ import { CardAction, DeckArea, Person, TurnAction } from "../enums";
 import { randomMemberOfArray } from "../utils/rndUtils";
 import { Action } from "./Action";
 import { Board } from "./Board";
-import { CardIndices } from "./CardIndices";
+import { CardLocations } from "./CardLocations";
 
 export class AI {
     board: Board;
@@ -21,8 +21,8 @@ export class AI {
         const actions: Action[] = [];
         const { enemyDeck, enemyCardDrawn } = this.board;
         enemyDeck.hand.cards.forEach((card, handIndex) => {
-            const selectedCardIndices = new CardIndices();
-            selectedCardIndices.addIndices(Person.Enemy, DeckArea.Hand, [
+            const selectedCardLocations = new CardLocations();
+            selectedCardLocations.addLocations(Person.Enemy, DeckArea.Hand, [
                 handIndex
             ]);
             if (!card) {
@@ -30,7 +30,7 @@ export class AI {
                     actions.push(
                         new Action({
                             cardAction: CardAction.Draw,
-                            selectedCardIndices
+                            selectedCardLocations
                         })
                     );
                 }
@@ -40,39 +40,39 @@ export class AI {
             actions.push(
                 new Action({
                     cardAction: CardAction.Retreat,
-                    selectedCardIndices
+                    selectedCardLocations
                 })
             );
-            const validMoveIndices = this.board
-                .calcTargetableIndices(
+            const validMoveLocations = this.board
+                .calcTargetableLocations(
                     Person.Enemy,
                     handIndex,
                     card,
                     CardAction.Move
                 )
                 .split();
-            for (const i of validMoveIndices) {
+            for (const i of validMoveLocations) {
                 actions.push(
                     new Action({
                         cardAction: CardAction.Move,
-                        selectedCardIndices,
-                        targetCardIndices: i
+                        selectedCardLocations,
+                        targetCardLocations: i
                     })
                 );
             }
-            const validAttackIndices = this.board
-                .calcTargetableIndices(
+            const validAttackLocations = this.board
+                .calcTargetableLocations(
                     Person.Enemy,
                     handIndex,
                     card,
                     CardAction.Attack
                 )
                 .split();
-            for (const i of validAttackIndices) {
+            for (const i of validAttackLocations) {
                 actions.push({
                     cardAction: CardAction.Attack,
-                    selectedCardIndices,
-                    targetCardIndices: i
+                    selectedCardLocations,
+                    targetCardLocations: i
                 });
             }
         });

@@ -10,8 +10,8 @@ export function CardActionMenu({
 }: {
     onAction: (a: CardAction) => void;
 }) {
-    const { selectedCardIndices } = useContext(UIStateContext);
-    const selectedCardIndex = selectedCardIndices.getFirstIndex(
+    const { selectedCardLocations } = useContext(UIStateContext);
+    const selectedCardIndex = selectedCardLocations.getFirstIndex(
         Person.Player,
         DeckArea.Hand
     );
@@ -19,7 +19,7 @@ export function CardActionMenu({
     if (selectedCardIndex == undefined) return <div />;
 
     const drawCardDisabledReason = gs.board.playerCardDrawn
-        ? "[Already drew from reserves this round]"
+        ? "[No draws remaining]"
         : gs.board.playerDeck.reserveStack.cards.length == 0
           ? "[No unit cards remaining]"
           : undefined;
@@ -63,6 +63,7 @@ export function CardActionMenu({
             {buttons.map((b) => (
                 <ActionButton
                     {...b}
+                    key={b.label}
                     onAction={(s: string) => onAction(s as CardAction)}
                 />
             ))}
