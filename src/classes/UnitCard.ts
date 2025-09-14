@@ -43,7 +43,7 @@ export class UnitCard {
         this.tapped = false
     }
 
-    isDead() {
+    get dead() {
         return this.hp <= 0 || this.position == CardPosition.Grave
     }
 }

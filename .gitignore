@@ -21,7 +21,7 @@ pnpm-debug.log*
 
 # Editor / IDE
 .vscode/*
-!.vscode/settings.json
+!.vscode/settings.board.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -30,7 +30,7 @@ pnpm-debug.log*
 
 # OS
 .DS_Store
-Thumbs.db
+Thumgs.board.db
 
 # TypeScript
 *.tsbuildinfo

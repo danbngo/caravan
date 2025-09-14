@@ -1,54 +1,33 @@
-import { createContext, useEffect, useState } from "react";
-import { UnitCard } from "../classes/UnitCard";
-import { DeckArea } from "../enums";
+import { createContext, useEffect, useRef, useState } from "react";
+import { CardAction, DeckArea, Person } from "../enums";
+import { CardIndices } from "../classes/CardIndices";
+
 
 interface UIState {
-    //selectedCard?: UnitCard | undefined
-    //setSelectedCard: ((card: UnitCard | undefined) => void)
-    selectedPlayerCardIndex?: number | undefined
-    setSelectedPlayerCardIndex: ((index: number | undefined) => void)
-    selectedEnemyCardIndex?: number | undefined
-    setSelectedEnemyCardIndex: ((index: number | undefined) => void)
-    selectedPlayerDeckArea?: DeckArea | undefined
-    setSelectedPlayerDeckArea: ((deckArea: DeckArea | undefined) => void)
-    selectedEnemyDeckArea?: DeckArea | undefined
-    setSelectedEnemyDeckArea: ((deckArea: DeckArea | undefined) => void)
+    selectedCardIndices: CardIndices
+    targetableCardIndices: CardIndices
+    targetingAction?: CardAction | undefined
+    setTargetingAction: (i?: CardAction | undefined) => void
 }
 
 export const UIStateContext = createContext<UIState>({
-    //setSelectedCard: (i: UnitCard | undefined) => console.log(i),
-    setSelectedEnemyCardIndex: (i: number | undefined) => console.log(i),
-    setSelectedPlayerCardIndex: (i: number | undefined) => console.log(i),
-    setSelectedPlayerDeckArea: (i: DeckArea | undefined) => console.log(i),
-    setSelectedEnemyDeckArea: (i: DeckArea | undefined) => console.log(i),
+    selectedCardIndices: new CardIndices(),
+    targetableCardIndices: new CardIndices(),
+    targetingAction: undefined,
+    setTargetingAction: (i?: CardAction | undefined) => console.log(i),
 });
 
 export function UIStateContextProvider({ children }: { children: React.ReactNode }) {
-    //const [selectedCard, setSelectedCard] = useState<UnitCard | undefined>();
-    const [selectedPlayerCardIndex, setSelectedPlayerCardIndex] = useState<number | undefined>();
-    const [selectedEnemyCardIndex, setSelectedEnemyCardIndex] = useState<number | undefined>();
-    const [selectedEnemyDeckArea, setSelectedEnemyDeckArea] = useState<DeckArea | undefined>();
-    const [selectedPlayerDeckArea, setSelectedPlayerDeckArea] = useState<DeckArea | undefined>();
-
-    useEffect(() => {
-        if (selectedPlayerCardIndex !== undefined) setSelectedEnemyCardIndex(undefined)
-    }, [selectedPlayerCardIndex])
-    useEffect(() => {
-        if (selectedEnemyCardIndex !== undefined) setSelectedPlayerCardIndex(undefined)
-    }, [selectedEnemyCardIndex])
+    const [targetingAction, setTargetingAction] = useState<CardAction | undefined>(undefined)
+    const targetableCardIndicesRef = useRef<CardIndices>(new CardIndices())
+    const selectedCardIndicesRef = useRef<CardIndices>(new CardIndices())
 
     return <UIStateContext.Provider value={
         {
-            //selectedCard,
-            //setSelectedCard,
-            setSelectedEnemyCardIndex,
-            setSelectedPlayerCardIndex,
-            selectedEnemyCardIndex,
-            selectedPlayerCardIndex,
-            selectedEnemyDeckArea,
-            setSelectedEnemyDeckArea,
-            selectedPlayerDeckArea,
-            setSelectedPlayerDeckArea
+            selectedCardIndices: selectedCardIndicesRef.current,
+            targetingAction,
+            setTargetingAction,
+            targetableCardIndices: targetableCardIndicesRef.current,
         }}>
         {children}
     </UIStateContext.Provider>

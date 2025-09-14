@@ -5,21 +5,21 @@ import { CardWrapper } from "./CardWrapper";
 import { LineSeparator } from "./LineSeperator";
 
 function calcDisplayState(card: UnitCard) {
-  if (card.isDead()) return CardDisplayState.Dead
+  if (card.dead) return CardDisplayState.Dead
   if (card.position == CardPosition.Reserve) return CardDisplayState.Reserve
   if (card.tapped) return CardDisplayState.Tapped
   return CardDisplayState.Normal
 }
 
 
-export function UnitCardView({ card, onClick, isSelected }: { card: UnitCard | GeneralCard, onClick?: Function | undefined, isSelected?: boolean | undefined }) {
+export function UnitCardView({ card, onClick, isSelected, isTargeted }: { card: UnitCard | GeneralCard, onClick?: Function | undefined, isSelected?: boolean | undefined, isTargeted?: boolean | undefined, }) {
   const { tapped, name, attack, rangedAttack, hp, maxHp, abilities } = card
   const displayState = calcDisplayState(card)
 
-  return <CardWrapper onClick={onClick} isSelected={isSelected} title={name} displayState={displayState}>
+  return <CardWrapper onClick={onClick} isSelected={isSelected} isTargeted={isTargeted} title={name} displayState={displayState}>
     <div className="text-sm space-y-1">
       <p>❤️ {hp}/{maxHp}</p>
-      {card instanceof GeneralCard ? <p>🪄 {card.mp}/{card.maxMp}</p> : null}
+      {card instanceof GeneralCard && card.maxMp ? <p>🪄 {card.mp}/{card.maxMp}</p> : null}
       <p>⚔️ {attack}</p>
       <p>🏹 {rangedAttack}</p>
     </div>

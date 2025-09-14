@@ -1,28 +1,17 @@
-import { TurnAction } from "../enums";
+import { gs } from "../classes/Game";
+import { Person, TurnAction } from "../enums";
+import { ActionButton } from "./ActionButton";
 
 //remember - can only be used by player
 export function TurnMenu({ onAction }: { onAction: (a: TurnAction) => void }) {
-    let buttons: { label: string; action: TurnAction | undefined, disabledReason?: string | undefined }[] = [];
+    let buttons: { label: string; action: string, disabledReason?: string | undefined }[] = [];
     buttons = [
-        { label: "End Turn", action: TurnAction.EndTurn },
+        { label: "End Turn", action: TurnAction.EndTurn, disabledReason: gs.board.turn == Person.Enemy ? '[Waiting For Enemy]' : undefined },
     ];
 
     return (
         <div className="flex gap-2 p-2">
-            {buttons.map((b) => (
-                <button
-                    className={
-                        b.disabledReason ? "w-full px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed"
-                            : "w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
-                    }
-                    title={b.disabledReason}
-                    key={b.action}
-                    disabled={!b.action || b.disabledReason !== undefined}
-                    onClick={() => b.action && onAction(b.action)}
-                >
-                    {`${b.label}${b.disabledReason ? ' ' + b.disabledReason : ''}`}
-                </button>
-            ))}
+            {buttons.map(b => <ActionButton {...b} onAction={(s: string) => onAction(s as TurnAction)} />)}
         </div>
     );
 };
