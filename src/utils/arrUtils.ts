@@ -1,7 +1,7 @@
 export function hasDuplicates<T>(arr: T[]): boolean {
     const seen = new Set<T>();
     for (const item of arr) {
-        if (!item) continue
+        if (!item) continue;
         if (seen.has(item)) {
             return true; // found a repeat
         }
@@ -18,10 +18,9 @@ export function safeRemoveFromArray<T>(arr: T[] | Set<T>, ...objs: T[]) {
                 arr.splice(index, 1);
             }
         }
-    }
-    else if (arr instanceof Set) {
+    } else if (arr instanceof Set) {
         for (const obj of objs) {
-            arr.delete(obj)
+            arr.delete(obj);
         }
     }
     return arr;
@@ -34,10 +33,9 @@ export function safeAddToArray<T>(arr: T[] | Set<T>, ...objs: T[]) {
                 arr.push(obj);
             }
         }
-    }
-    else {
+    } else {
         for (const obj of objs) {
-            arr.add(obj)
+            arr.add(obj);
         }
     }
     return arr;

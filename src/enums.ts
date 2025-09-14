@@ -1,4 +1,3 @@
-
 export enum Person {
     Player = "Player",
     Enemy = "Enemy",
@@ -12,27 +11,27 @@ export enum CardAction {
 }
 
 export enum TurnAction {
-    EndTurn = 'EndTurn'
+    EndTurn = "EndTurn",
 }
 
 export enum DeckArea {
-    Hand = 'Hand',
-    General = 'General',
-    Reserves = 'Reserves',
-    Grave = 'Grave'
+    Hand = "Hand",
+    General = "General",
+    Reserves = "Reserves",
+    Grave = "Grave",
 }
 
 export enum CardDisplayState {
-    Normal = 'Normal',
-    Tapped = 'Tapped',
-    Reserve = 'Reserve',
-    Dead = 'Dead',
-    Empty = 'Empty',
+    Normal = "Normal",
+    Tapped = "Tapped",
+    Reserve = "Reserve",
+    Dead = "Dead",
+    Empty = "Empty",
 }
 
 export enum CardPosition {
-    Hand = 'Hand',
-    General = 'General',
-    Reserve = 'Reserve',
-    Grave = 'Grave',
+    Hand = "Hand",
+    General = "General",
+    Reserve = "Reserve",
+    Grave = "Grave",
 }

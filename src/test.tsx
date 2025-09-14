@@ -7,22 +7,22 @@ import { Board } from "./classes/Board";
 import { AI } from "./classes/AI";
 
 function makeRandomDeck() {
-    const generalCard = GENERAL_CARDS.GENERAL
-    const unitCards: Set<UnitCard> = new Set()
+    const generalCard = GENERAL_CARDS.GENERAL;
+    const unitCards: Set<UnitCard> = new Set();
     for (let i = 0; i < 10; i++) {
-        const card = randomMemberOfArray(ALL_UNIT_CARDS)
-        unitCards.add(card)
+        const card = randomMemberOfArray(ALL_UNIT_CARDS);
+        unitCards.add(card);
     }
-    return new Deck({ unitCards, generalCard })
+    return new Deck({ unitCards, generalCard });
 }
 
 export function startTestGame() {
-    gs.playerDeck = makeRandomDeck()
+    gs.playerDeck = makeRandomDeck();
 
     gs.board = new Board({
         playerDeck: gs.playerDeck,
-        enemyDeck: makeRandomDeck()
-    })
+        enemyDeck: makeRandomDeck(),
+    });
 
-    gs.enemyAI = new AI({ board: gs.board })
+    gs.enemyAI = new AI({ board: gs.board });
 }

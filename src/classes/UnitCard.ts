@@ -9,7 +9,7 @@ export class UnitCard {
     rangedAttack: number;
     abilityNames: string[];
     position: CardPosition;
-    tapped?: boolean
+    tapped?: boolean;
 
     constructor(
         name: string,
@@ -24,27 +24,32 @@ export class UnitCard {
         this.attack = attack;
         this.rangedAttack = rangedAttack;
         this.abilityNames = abilityNames;
-        this.tapped = false
-        this.position = CardPosition.Reserve
+        this.tapped = false;
+        this.position = CardPosition.Reserve;
     }
 
     get abilities() {
-        return ALL_ABILITIES.filter(a => (this.abilityNames.includes(a.name)))
+        return ALL_ABILITIES.filter((a) => this.abilityNames.includes(a.name));
     }
 
     static copy(card: UnitCard): UnitCard {
-        return new UnitCard(card.name, card.maxHp, card.attack, card.rangedAttack, [...card.abilityNames])
+        return new UnitCard(
+            card.name,
+            card.maxHp,
+            card.attack,
+            card.rangedAttack,
+            [...card.abilityNames],
+        );
     }
 
     tap() {
-        this.tapped = true
+        this.tapped = true;
     }
     untap() {
-        this.tapped = false
+        this.tapped = false;
     }
 
     get dead() {
-        return this.hp <= 0 || this.position == CardPosition.Grave
+        return this.hp <= 0 || this.position == CardPosition.Grave;
     }
 }
-

@@ -4,44 +4,80 @@ import { Action } from "./Action";
 import { Board } from "./Board";
 import { CardIndices } from "./CardIndices";
 
-
 export class AI {
-    board: Board
+    board: Board;
 
     constructor({ board }: { board: Board }) {
-        this.board = board
+        this.board = board;
     }
 
     chooseAction() {
-        const actions = this.calcPotentialActions()
-        const action = randomMemberOfArray(actions)
-        return action
+        const actions = this.calcPotentialActions();
+        const action = randomMemberOfArray(actions);
+        return action;
     }
 
     calcPotentialActions() {
-        const actions: Action[] = []
-        const { playerDeck, enemyDeck, enemyCardDrawn } = this.board
+        const actions: Action[] = [];
+        const { playerDeck, enemyDeck, enemyCardDrawn } = this.board;
         enemyDeck.hand.cards.forEach((card, handIndex) => {
-            const selectedCardIndices = new CardIndices()
-            selectedCardIndices.addIndices(Person.Enemy, DeckArea.Hand, [handIndex])
+            const selectedCardIndices = new CardIndices();
+            selectedCardIndices.addIndices(Person.Enemy, DeckArea.Hand, [
+                handIndex,
+            ]);
             if (!card) {
                 if (!enemyCardDrawn) {
-                    actions.push(new Action({ cardAction: CardAction.Draw, selectedCardIndices }))
+                    actions.push(
+                        new Action({
+                            cardAction: CardAction.Draw,
+                            selectedCardIndices,
+                        }),
+                    );
                 }
-                return
+                return;
             }
-            if (card.tapped || card.dead) return
-            actions.push(new Action({ cardAction: CardAction.Retreat, selectedCardIndices }))
-            const validMoveIndices = this.board.calcTargetableIndices(Person.Enemy, handIndex, card, CardAction.Move).split()
+            if (card.tapped || card.dead) return;
+            actions.push(
+                new Action({
+                    cardAction: CardAction.Retreat,
+                    selectedCardIndices,
+                }),
+            );
+            const validMoveIndices = this.board
+                .calcTargetableIndices(
+                    Person.Enemy,
+                    handIndex,
+                    card,
+                    CardAction.Move,
+                )
+                .split();
             for (const i of validMoveIndices) {
-                actions.push(new Action({ cardAction: CardAction.Move, selectedCardIndices, targetCardIndices: i }))
+                actions.push(
+                    new Action({
+                        cardAction: CardAction.Move,
+                        selectedCardIndices,
+                        targetCardIndices: i,
+                    }),
+                );
             }
-            const validAttackIndices = this.board.calcTargetableIndices(Person.Enemy, handIndex, card, CardAction.Attack).split()
+            const validAttackIndices = this.board
+                .calcTargetableIndices(
+                    Person.Enemy,
+                    handIndex,
+                    card,
+                    CardAction.Attack,
+                )
+                .split();
             for (const i of validAttackIndices) {
-                actions.push({ cardAction: CardAction.Attack, selectedCardIndices, targetCardIndices: i })
+                actions.push({
+                    cardAction: CardAction.Attack,
+                    selectedCardIndices,
+                    targetCardIndices: i,
+                });
             }
-        })
-        if (actions.length == 0) actions.push({ turnAction: TurnAction.EndTurn })
-        return actions
+        });
+        if (actions.length == 0)
+            actions.push({ turnAction: TurnAction.EndTurn });
+        return actions;
     }
 }

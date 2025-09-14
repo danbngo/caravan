@@ -4,12 +4,16 @@ import { CombatBoard } from "./gfx/CombatBoard";
 import { UIStateContextProvider } from "./gfx/UIContext";
 import { startTestGame } from "./test";
 
-startTestGame()
+startTestGame();
 
 function App() {
-  return <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 via-gray-200 to-teal-100"><UIStateContextProvider>
-    <CombatBoard />
-  </UIStateContextProvider></div>
+    return (
+        <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 via-gray-200 to-teal-100">
+            <UIStateContextProvider>
+                <CombatBoard />
+            </UIStateContextProvider>
+        </div>
+    );
 }
 
 const container = document.getElementById("app")!;

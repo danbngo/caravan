@@ -28,7 +28,7 @@ export default {
   },
   output: {
     filename: "bundle.js",
-    path: path.resolve(process.cwd(), "dist"),
+    path: path.resolve("./", "dist"), //path.resolve(process.cwd(), "dist"),
   },
   plugins: [
     new CleanWebpackPlugin(),
