@@ -1,4 +1,3 @@
-import { UnitCard } from "../classes/UnitCard";
+import { CardLocation } from "../classes/CardLocation";
 
-export type HandClickHandler = (index: number) => void;
-export type CardClickHandler = (card: UnitCard | undefined) => void;
+export type CardClickHandler = (cardLocation: CardLocation | undefined) => void;

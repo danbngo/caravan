@@ -21,10 +21,8 @@ export class Hand {
     }
 
     validate() {
-        if (this.size < Hand.MIN_HAND_SIZE || this.size > Hand.MAX_HAND_SIZE)
-            throw new Error("hand size out of range");
-        if (this.cards.length > this.size)
-            throw new Error("num of initial cards exceeded size limit");
+        if (this.size < Hand.MIN_HAND_SIZE || this.size > Hand.MAX_HAND_SIZE) throw new Error("hand size out of range");
+        if (this.cards.length > this.size) throw new Error("num of initial cards exceeded size limit");
     }
 
     rationalize() {

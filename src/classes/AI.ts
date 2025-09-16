@@ -1,83 +1,24 @@
-import { CardAction, DeckArea, Person, TurnAction } from "../enums";
+import { Person, TurnAction } from "../enums";
 import { randomMemberOfArray } from "../utils/rndUtils";
-import { Action } from "./Action";
 import { Board } from "./Board";
-import { CardLocations } from "./CardLocations";
+import { Move } from "./Move";
 
 export class AI {
+    person: Person;
     board: Board;
 
-    constructor({ board }: { board: Board }) {
+    constructor({ person, board }: { person: Person; board: Board }) {
+        this.person = person;
         this.board = board;
     }
 
-    chooseAction() {
-        const actions = this.calcPotentialActions();
-        const action = randomMemberOfArray(actions);
-        return action;
-    }
-
-    calcPotentialActions() {
-        const actions: Action[] = [];
-        const { enemyDeck, enemyCardDrawn } = this.board;
-        enemyDeck.hand.cards.forEach((card, handIndex) => {
-            const selectedCardLocations = new CardLocations();
-            selectedCardLocations.addLocations(Person.Enemy, DeckArea.Hand, [
-                handIndex
-            ]);
-            if (!card) {
-                if (!enemyCardDrawn) {
-                    actions.push(
-                        new Action({
-                            cardAction: CardAction.Draw,
-                            selectedCardLocations
-                        })
-                    );
-                }
-                return;
-            }
-            if (card.tapped || card.dead) return;
-            actions.push(
-                new Action({
-                    cardAction: CardAction.Retreat,
-                    selectedCardLocations
-                })
-            );
-            const validMoveLocations = this.board
-                .calcTargetableLocations(
-                    Person.Enemy,
-                    handIndex,
-                    card,
-                    CardAction.Move
-                )
-                .split();
-            for (const i of validMoveLocations) {
-                actions.push(
-                    new Action({
-                        cardAction: CardAction.Move,
-                        selectedCardLocations,
-                        targetCardLocations: i
-                    })
-                );
-            }
-            const validAttackLocations = this.board
-                .calcTargetableLocations(
-                    Person.Enemy,
-                    handIndex,
-                    card,
-                    CardAction.Attack
-                )
-                .split();
-            for (const i of validAttackLocations) {
-                actions.push({
-                    cardAction: CardAction.Attack,
-                    selectedCardLocations,
-                    targetCardLocations: i
-                });
-            }
-        });
-        if (actions.length == 0)
-            actions.push({ turnAction: TurnAction.EndTurn });
-        return actions;
+    chooseMove() {
+        const unitMoves = this.board.calcValidUnitMoves(this.person);
+        if (unitMoves.length == 0) {
+            return new Move(TurnAction.EndTurn);
+        }
+        const move = randomMemberOfArray(unitMoves);
+        console.log("executing move:", move, "out of potential moves:", unitMoves);
+        return move;
     }
 }

@@ -5,7 +5,7 @@ export enum Person {
 
 export enum CardAction {
     Draw = "Draw",
-    Move = "Move",
+    Swap = "Swap",
     Attack = "Attack",
     Retreat = "Retreat"
 }

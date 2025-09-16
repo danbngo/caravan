@@ -1,4 +1,4 @@
-export class Ability {
+export class Trait {
     name: string;
     icon: string;
     description: string;

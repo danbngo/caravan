@@ -1,84 +1,36 @@
-import { DeckArea, Person } from "../enums";
-import { CardLocation } from "../interfaces/CardLocation";
-import { safeAddToArray, safeRemoveFromArray } from "../utils/arrUtils";
-
-type CardLocationsMap = Record<Person, Record<DeckArea, number[]>>;
-
-function createEmptyCardLocationsMap(): CardLocationsMap {
-    const result = {} as Record<Person, Record<DeckArea, number[]>>;
-    for (const person of Object.values(Person)) {
-        result[person as Person] = {} as Record<DeckArea, number[]>;
-        for (const deckArea of Object.values(DeckArea)) {
-            result[person as Person][deckArea as DeckArea] = [];
-        }
-    }
-    return result;
-}
+import { DeckArea } from "../enums";
+import { safeAddToArray } from "../utils/arrUtils";
+import { CardLocation } from "./CardLocation";
+import { Deck } from "./Deck";
 
 export class CardLocations {
-    private locations: CardLocationsMap;
+    locations: CardLocation[];
+    decks: Deck[];
 
-    constructor({
-        locations = createEmptyCardLocationsMap()
-    }: { locations?: CardLocationsMap } = {}) {
-        this.locations = locations;
+    constructor(decks: Deck[]) {
+        this.decks = decks;
+        this.locations = [];
     }
 
-    addLocations(person: Person, deckArea: DeckArea, indices: number[]) {
-        safeAddToArray(this.locations[person][deckArea], ...indices);
+    addLocations(deck: Deck, deckArea: DeckArea, indices: number[]) {
+        for (const i of indices) safeAddToArray(this.locations, new CardLocation(deck, deckArea, i));
     }
 
-    removeLocations(person: Person, deckArea: DeckArea, indices: number[]) {
-        safeRemoveFromArray(this.locations[person][deckArea], ...indices);
+    removeLocations(deck: Deck, deckArea: DeckArea, indices: number[]) {
+        this.locations = this.locations.filter((l) => l.deck !== deck || l.deckArea !== deckArea || !indices.includes(l.index));
     }
 
-    setLocations(person: Person, deckArea: DeckArea, indices: number[]) {
-        this.locations = createEmptyCardLocationsMap();
-        this.addLocations(person, deckArea, indices);
+    setLocations(deck: Deck, deckArea: DeckArea, indices: number[]) {
+        this.locations = [];
+        this.addLocations(deck, deckArea, indices);
     }
 
-    getLocationIndices(person: Person, deckArea: DeckArea) {
-        return this.locations[person][deckArea];
+    getLocationIndices(deck: Deck, deckArea: DeckArea): number[] {
+        return this.locations.filter((l) => l.deck == deck && l.deckArea == deckArea).map((l) => l.index);
     }
 
-    getFirstLocation() {
-        const locations = this.split();
-        if (locations.length > 0) {
-            throw new Error(
-                "should not have been able to split into multiple locations"
-            );
-        }
-        return locations[0];
-    }
-
-    /*getFirstLocationIndex(
-        person: Person,
-        deckArea: DeckArea
-    ): number | undefined {
-        const indices = this.locations[person][deckArea];
-        if (indices.length == 0) return undefined;
-        return Math.min(...indices);
-    }*/
-
-    hasIndex(person: Person, deckArea: DeckArea, index: number = 0): boolean {
-        const indices = this.getLocationIndices(person, deckArea);
+    hasIndex(deck: Deck, deckArea: DeckArea, index: number = 0): boolean {
+        const indices = this.getLocationIndices(deck, deckArea);
         return indices.includes(index);
-    }
-
-    split() {
-        const result: CardLocation[] = [];
-        for (const person of Object.values(Person)) {
-            for (const deckArea of Object.values(DeckArea)) {
-                const indices = this.getLocationIndices(person, deckArea);
-                for (const i of indices) {
-                    result.push({
-                        person,
-                        deckArea,
-                        index: i
-                    });
-                }
-            }
-        }
-        return result;
     }
 }

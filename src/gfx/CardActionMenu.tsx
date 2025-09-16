@@ -3,21 +3,21 @@ import { CardAction, DeckArea, Person } from "../enums";
 import { UIStateContext } from "./UIContext";
 import { ActionButton } from "./ActionButton";
 import { gs } from "../classes/Game";
+import { UnitCard } from "../classes/UnitCard";
 
 //remember - can only be used by player
-export function CardActionMenu({
-    onAction
-}: {
-    onAction: (a: CardAction) => void;
-}) {
-    const { selectedCardLocations } = useContext(UIStateContext);
-    const selectedCardIndex = selectedCardLocations.getFirstIndex(
-        Person.Player,
-        DeckArea.Hand
-    );
+export function CardActionMenu({ onAction }: { onAction: (a: CardAction) => void }) {
+    const { selectedCardLocation } = useContext(UIStateContext);
+    if (!selectedCardLocation) return <div />;
+    const { person, deckArea, index } = selectedCardLocation;
+    if (person == Person.Player && deckArea == DeckArea.Hand && index) {
+        const selectedCard = gs.board.playerDeck.hand.cards[index];
+        return <UnitCardActionMenu card={selectedCard} onAction={onAction} />;
+    }
+    return <div />;
+}
 
-    if (selectedCardIndex == undefined) return <div />;
-
+export function UnitCardActionMenu({ card, onAction }: { card?: UnitCard | undefined; onAction: (a: CardAction) => void }) {
     const drawCardDisabledReason = gs.board.playerCardDrawn
         ? "[No draws remaining]"
         : gs.board.playerDeck.reserveStack.cards.length == 0
@@ -30,9 +30,7 @@ export function CardActionMenu({
         disabledReason?: string | undefined;
     }[] = [];
 
-    const selectedCard = gs.board.playerDeck.hand.cards[selectedCardIndex];
-
-    if (!selectedCard) {
+    if (!card) {
         buttons = [
             {
                 label: "Draw Card",
@@ -40,7 +38,7 @@ export function CardActionMenu({
                 disabledReason: drawCardDisabledReason
             }
         ];
-    } else if (selectedCard.tapped) {
+    } else if (card.tapped) {
         buttons = [
             {
                 label: "No actions available",
@@ -50,22 +48,18 @@ export function CardActionMenu({
         ];
     } else {
         buttons = [
-            { label: "Move", action: CardAction.Move },
+            { label: "Swap", action: CardAction.Swap },
             { label: "Retreat", action: CardAction.Retreat },
             { label: "Attack", action: CardAction.Attack }
         ];
     }
 
-    console.log("card action menu:", selectedCard, buttons);
+    console.log("card action menu:", card, buttons);
 
     return (
         <div className="flex gap-2 p-2">
             {buttons.map((b) => (
-                <ActionButton
-                    {...b}
-                    key={b.label}
-                    onAction={(s: string) => onAction(s as CardAction)}
-                />
+                <ActionButton {...b} key={b.label} onAction={(s: string) => onAction(s as CardAction)} />
             ))}
         </div>
     );

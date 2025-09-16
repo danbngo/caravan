@@ -1,9 +1,9 @@
+import { CardLocation } from "../classes/CardLocation";
 import { GeneralCard } from "../classes/GeneralCard";
 import { UnitCard } from "../classes/UnitCard";
 import { CardDisplayState, CardPosition } from "../enums";
 import { CardWrapper } from "./CardWrapper";
 import { CardClickHandler } from "./interfaces";
-import { LineSeparator } from "./LineSeperator";
 
 function calcDisplayState(card: UnitCard) {
     if (card.dead) return CardDisplayState.Dead;
@@ -14,21 +14,30 @@ function calcDisplayState(card: UnitCard) {
 
 export function UnitCardView({
     card,
+    cardLocation,
     onClick,
     isSelected,
     isTargeted
 }: {
     card: UnitCard | GeneralCard;
+    cardLocation?: CardLocation | undefined;
     onClick?: CardClickHandler | undefined;
     isSelected?: boolean | undefined;
     isTargeted?: boolean | undefined;
 }) {
-    const { name, attack, rangedAttack, hp, maxHp, abilities } = card;
+    const { name, attack, rangedAttack, hp, maxHp, abilities, traits } = card;
     const displayState = calcDisplayState(card);
+    const hpRatio = hp / maxHp;
+    const abilitiesAndTraits = [...abilities, ...traits];
+    console.log("abilities:", abilities, card.abilityIDs);
 
     return (
         <CardWrapper
-            onClick={onClick}
+            redTint={1 - hpRatio}
+            onClick={() => {
+                console.log("unit card onclick");
+                if (onClick) onClick(cardLocation);
+            }}
             isSelected={isSelected}
             isTargeted={isTargeted}
             title={name}
@@ -46,17 +55,15 @@ export function UnitCardView({
                 <p>⚔️ {attack}</p>
                 <p>🏹 {rangedAttack}</p>
             </div>
-            {abilities.length > 0 && (
+            {abilitiesAndTraits.length > 0 && (
                 <>
-                    <LineSeparator />
-                    <div className="text-xs">
-                        <ul className="list-disc pl-4">
-                            {abilities.map((a, i) => (
-                                <li key={i}>
-                                    <strong>{a.name}</strong>
-                                </li>
-                            ))}
-                        </ul>
+                    <hr className="p-1" />
+                    <div className="flex flex-wrap gap-2">
+                        {abilitiesAndTraits.map((a) => (
+                            <div key={a.name} title={`${a.name}: ${a.description}`}>
+                                {a.icon}
+                            </div>
+                        ))}
                     </div>
                 </>
             )}

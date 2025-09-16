@@ -1,35 +1,32 @@
+import { CardLocation } from "../classes/CardLocation";
 import { CardLocations } from "../classes/CardLocations";
-import { Hand } from "../classes/Hand";
-import { DeckArea, Person } from "../enums";
+import { Deck } from "../classes/Deck";
+import { DeckArea } from "../enums";
 import { CardView } from "./CardView";
-import { HandClickHandler } from "./interfaces";
+import { CardClickHandler } from "./interfaces";
 
 export function HandView({
-    hand,
-    person,
+    deck,
     onClick,
     selectedCardIndex,
-    targetedCardLocations
+    targetCardLocations
 }: {
-    hand: Hand;
-    person: Person;
-    onClick?: HandClickHandler | undefined;
+    deck: Deck;
+    onClick?: CardClickHandler | undefined;
     selectedCardIndex?: number | undefined;
-    targetedCardLocations?: CardLocations | undefined;
+    targetCardLocations?: CardLocations | undefined;
 }) {
+    const { hand } = deck;
     return (
         <div className="flex flex-row gap-4 overflow-x-auto p-2">
             {hand.cards.map((card, index) => (
                 <CardView
                     key={index}
                     isSelected={selectedCardIndex == index}
-                    isTargeted={targetedCardLocations?.hasIndex(
-                        person,
-                        DeckArea.Hand,
-                        index
-                    )}
+                    isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.Hand, index)}
                     onClick={() => {
-                        if (onClick) onClick(index);
+                        console.log("handview onclick");
+                        if (onClick) onClick(new CardLocation(deck, DeckArea.Hand, index));
                     }}
                     card={card}
                 />

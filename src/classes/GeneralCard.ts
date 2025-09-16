@@ -1,3 +1,5 @@
+import { AbilityID } from "../defs/ABILITIES";
+import { TraitID } from "../defs/TRAITS";
 import { UnitCard } from "./UnitCard";
 
 export class GeneralCard extends UnitCard {
@@ -6,13 +8,15 @@ export class GeneralCard extends UnitCard {
 
     constructor(
         name: string,
+        description: string,
         hp: number,
         attack: number,
         rangedAttack: number,
         mp: number,
-        abilityNames: string[] = []
+        abilityIDs: AbilityID[] = [],
+        traitIDs: TraitID[] = []
     ) {
-        super(name, hp, attack, rangedAttack, abilityNames);
+        super(name, description, hp, attack, rangedAttack, abilityIDs, traitIDs);
         this.mp = mp;
         this.maxMp = mp;
     }
@@ -20,11 +24,13 @@ export class GeneralCard extends UnitCard {
     static copy(card: GeneralCard): GeneralCard {
         return new GeneralCard(
             card.name,
+            card.description,
             card.hp,
             card.attack,
             card.rangedAttack,
             card.maxMp,
-            [...card.abilityNames]
+            [...card.abilityIDs],
+            [...card.traitIDs]
         );
     }
 }

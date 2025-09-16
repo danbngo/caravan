@@ -44,7 +44,9 @@ export default defineConfig([
                     useTabs: false,
                     semi: true,
                     singleQuote: false,
-                    trailingComma: "none"
+                    trailingComma: "none",
+                    endOfLine: "auto",
+                    printWidth: 130
                 }
             ],
             "@typescript-eslint/no-unused-vars": "error",

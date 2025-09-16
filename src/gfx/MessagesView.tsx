@@ -23,12 +23,8 @@ export function MessagesView({ messages }: { messages: string[] }) {
             className="flex flex-col"
         >
             <div className="w-[35px]">
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="p-2 self-end text-gray-700 hover:text-gray-900"
-                >
-                    {isExpanded ? "🔽" : "🔼"}{" "}
-                    {/* down = expanded, up = collapsed */}
+                <button onClick={() => setIsExpanded(!isExpanded)} className="p-2 self-end text-gray-700 hover:text-gray-900">
+                    {isExpanded ? "🔽" : "🔼"} {/* down = expanded, up = collapsed */}
                 </button>
             </div>
             <div
@@ -42,10 +38,7 @@ export function MessagesView({ messages }: { messages: string[] }) {
                 }}
             >
                 {messages.map((msg, index) => (
-                    <div
-                        key={index}
-                        className="text-sm text-gray-800 mb-4 last:mb-0"
-                    >
+                    <div key={index} className="text-sm text-gray-800 mb-4 last:mb-0">
                         {msg}
                     </div>
                 ))}

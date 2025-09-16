@@ -8,26 +8,25 @@ import { CardView } from "./CardView";
 import { TurnMenu } from "./TurnMenu";
 import { MessagesView } from "./MessagesView";
 import { gs } from "../classes/Game";
+import { Move } from "../classes/Move";
+import { CardLocation } from "../classes/CardLocation";
+import { Deck } from "../classes/Deck";
 
-type OnActClickHandler = (
-    person: Person,
-    deckArea: DeckArea,
-    index?: number | undefined
-) => void;
+type OnActClickHandler = (deck: Deck, deckArea: DeckArea, index?: number | undefined) => void;
 
 export function CombatBoard() {
     const {
-        selectedCardLocations,
-        targetedCardLocations,
+        selectedCardLocation,
+        targetCardLocations,
         targetingAction,
-        setTargetingAction
+        setTargetingAction,
+        setSelectedCardLocation,
+        setTargetCardLocations
     } = useContext(UIStateContext);
 
     const { enemyDeck, playerDeck, messages, turn } = gs.board;
     const [refreshTrigger, setRefreshTrigger] = useState<number>();
-    const onActClickHandlerRef = useRef<OnActClickHandler | undefined>(
-        undefined
-    );
+    const onActClickHandlerRef = useRef<OnActClickHandler | undefined>(undefined);
 
     console.log(
         "combat board re-render:",
@@ -37,46 +36,49 @@ export function CombatBoard() {
         playerDeck,
         messages,
         turn,
-        selectedCardLocations,
-        targetedCardLocations
+        selectedCardLocation,
+        targetCardLocations
     );
 
-    function onClickCard(person: Person, deckArea: DeckArea, index?: number) {
-        console.log("combat board: card clicked", person, deckArea, index);
-        if (onActClickHandlerRef.current)
-            onActClickHandlerRef.current(person, deckArea, index);
-        else selectedCardLocations.setLocations(person, deckArea, [index || 0]);
+    function onClickCard(cardLocation: CardLocation) {
+        const { deck, deckArea, index } = cardLocation;
+        console.log("combat board: card clicked", deck, deckArea, index);
+        if (onActClickHandlerRef.current) onActClickHandlerRef.current(deck, deckArea, index);
+        else setSelectedCardLocation(new CardLocation(deck, deckArea, index || 0));
         setRefreshTrigger(Math.random());
     }
 
     function onClickCardAction(action: CardAction) {
         console.log("combat board: card action clicked:", action);
-        const handIndex = selectedCardLocations.getFirstIndex(
-            Person.Player,
-            DeckArea.Hand
-        );
+        if (!selectedCardLocation) return;
 
-        if (action == CardAction.Move || action == CardAction.Attack) {
+        if (action == CardAction.Swap || action == CardAction.Attack) {
             setTargetingAction(action);
-            targetedCardLocations = gs.board.calcTargetableLocations(
-                Person.Player,
-                DeckArea.Hand,
-                handIndex
-            );
-            onActClickHandlerRef.current = (p, d, i) => {
-                if (targetedCardLocations.hasIndex(p, d, i || 0)) {
-                    gs.board.processCardAction(action, selectedCardLocations);
+            const _targetCardLocations = gs.board.calcTargetableLocations(selectedCardLocation, action);
+            console.log("setting target card locations:", _targetCardLocations);
+            setTargetCardLocations(_targetCardLocations);
+            onActClickHandlerRef.current = (deck, deckArea, index) => {
+                if (_targetCardLocations.hasIndex(deck, deckArea, index || 0)) {
+                    const move: Move = new Move(action, selectedCardLocation, new CardLocation(deck, deckArea, index || 0));
+                    gs.board.processMove(move);
                     onActClickHandlerRef.current = undefined;
+                    setTargetCardLocations();
+                    setTargetingAction();
+                    //edge case logic. think about fixing this later.
+                    if (move.action == CardAction.Swap) {
+                        setSelectedCardLocation(move.targetCardLocation);
+                    }
                 }
             };
-        } else gs.board.processCardAction(action, selectedCardLocations);
+        } else gs.board.processMove(new Move(action, selectedCardLocation));
         //reselect the acting card
-        onClickCard(Person.Player, DeckArea.Hand, handIndex);
+        onClickCard(selectedCardLocation);
         setRefreshTrigger(Math.random());
     }
 
     function onClickTurnAction(action: TurnAction) {
-        gs.board.processTurnAction(action);
+        const move = new Move(action);
+        gs.board.processMove(move);
         if (action == TurnAction.EndTurn) {
             gs.handleEnemyTurn(async () => {
                 setRefreshTrigger(Math.random());
@@ -92,134 +94,20 @@ export function CombatBoard() {
 
     return (
         <div className="flex w-full items-center p-4">
-            <div className="w-[75px]">
+            <div className="w-[200px]">
                 <MessagesView messages={messages} />
             </div>
             <div className="flex-1">
-                <div className="flex w-full items-center justify-between p-4">
-                    <HandView
-                        hand={enemyDeck.hand}
-                        person={Person.Enemy}
-                        onClick={(i) =>
-                            onClickCard(Person.Enemy, DeckArea.Hand, i)
-                        }
-                        selectedCardIndex={selectedCardLocations.getFirstIndex(
-                            Person.Enemy,
-                            DeckArea.Hand
-                        )}
-                        targetedCardLocations={targetedCardLocations}
-                    />
-                    <div className="flex flex-row gap-4 overflow-x-auto p-2">
-                        <CardView
-                            card={enemyDeck.generalCard}
-                            onClick={() =>
-                                onClickCard(Person.Enemy, DeckArea.General)
-                            }
-                            isSelected={selectedCardLocations.hasIndex(
-                                Person.Enemy,
-                                DeckArea.General
-                            )}
-                            isTargeted={targetedCardLocations.hasIndex(
-                                Person.Enemy,
-                                DeckArea.General
-                            )}
-                        />
-                        <CardView
-                            card={enemyDeck.reserveStack.cards[0]}
-                            onClick={() =>
-                                onClickCard(Person.Enemy, DeckArea.Reserves)
-                            }
-                            isSelected={selectedCardLocations.hasIndex(
-                                Person.Enemy,
-                                DeckArea.Reserves
-                            )}
-                            isTargeted={targetedCardLocations.hasIndex(
-                                Person.Enemy,
-                                DeckArea.Reserves
-                            )}
-                        />
-                        <CardView
-                            card={enemyDeck.gravePile.cards[0]}
-                            onClick={() =>
-                                onClickCard(Person.Enemy, DeckArea.Grave)
-                            }
-                            isSelected={selectedCardLocations.hasIndex(
-                                Person.Enemy,
-                                DeckArea.Grave
-                            )}
-                            isTargeted={targetedCardLocations.hasIndex(
-                                Person.Enemy,
-                                DeckArea.Grave
-                            )}
-                        />
-                    </div>
-                </div>
+                <CombatBoardPersonSection deck={enemyDeck} onClickCard={onClickCard} />
                 <CombatBoardLabels />
-                <div className="flex w-full items-center justify-between p-4">
-                    <HandView
-                        hand={playerDeck.hand}
-                        person={Person.Player}
-                        onClick={(i) =>
-                            onClickCard(Person.Player, DeckArea.Hand, i)
-                        }
-                        selectedCardIndex={selectedCardLocations.getFirstIndex(
-                            Person.Player,
-                            DeckArea.Hand
-                        )}
-                    />
-                    <div className="flex flex-row gap-4 overflow-x-auto p-2">
-                        <CardView
-                            card={playerDeck.generalCard}
-                            onClick={() =>
-                                onClickCard(Person.Player, DeckArea.General)
-                            }
-                            isSelected={selectedCardLocations.hasIndex(
-                                Person.Player,
-                                DeckArea.General
-                            )}
-                            isTargeted={targetedCardLocations.hasIndex(
-                                Person.Player,
-                                DeckArea.General
-                            )}
-                        />
-                        <CardView
-                            card={playerDeck.reserveStack.cards[0]}
-                            onClick={() =>
-                                onClickCard(Person.Player, DeckArea.Reserves)
-                            }
-                            isSelected={selectedCardLocations.hasIndex(
-                                Person.Player,
-                                DeckArea.Reserves
-                            )}
-                            isTargeted={targetedCardLocations.hasIndex(
-                                Person.Player,
-                                DeckArea.Reserves
-                            )}
-                        />
-                        <CardView
-                            card={playerDeck.gravePile.cards[0]}
-                            onClick={() =>
-                                onClickCard(Person.Player, DeckArea.Grave)
-                            }
-                            isSelected={selectedCardLocations.hasIndex(
-                                Person.Player,
-                                DeckArea.Grave
-                            )}
-                            isTargeted={targetedCardLocations.hasIndex(
-                                Person.Player,
-                                DeckArea.Grave
-                            )}
-                        />
-                    </div>
-                </div>
+                <CombatBoardPersonSection deck={playerDeck} onClickCard={onClickCard} />
                 <LineSeparator />
                 <div className="flex w-full items-center justify-between p-4">
                     {targetingAction && turn == Person.Player ? (
                         <div>{`${targetingAction}: Choose target`}</div>
-                    ) : selectedCardLocations.hasIndex(
-                          Person.Player,
-                          DeckArea.Hand
-                      ) && turn == Person.Player ? (
+                    ) : selectedCardLocation?.person == Person.Player &&
+                      selectedCardLocation.deckArea == DeckArea.Hand &&
+                      turn == Person.Player ? (
                         <CardActionMenu onAction={onClickCardAction} />
                     ) : (
                         <div />
@@ -234,21 +122,54 @@ export function CombatBoard() {
 export function CombatBoardLabels() {
     return (
         <div className="relative w-full h-16">
-            <h4 className="absolute left-[24%] top-1/2 -translate-y-1/2 text-xl font-bold">
-                Units
-            </h4>
+            <h4 className="absolute left-[24%] top-1/2 -translate-y-1/2 text-xl font-bold">Units</h4>
 
-            <h4 className="absolute left-[72.5%] top-1/2 -translate-y-1/2 text-xl font-bold">
-                General
-            </h4>
+            <h4 className="absolute left-[72.5%] top-1/2 -translate-y-1/2 text-xl font-bold">General</h4>
 
-            <h4 className="absolute left-[82%] top-1/2 -translate-y-1/2 text-xl font-bold">
-                Reserves
-            </h4>
+            <h4 className="absolute left-[82%] top-1/2 -translate-y-1/2 text-xl font-bold">Reserves</h4>
 
-            <h4 className="absolute left-[91.5%] top-1/2 -translate-y-1/2 text-xl font-bold">
-                Grave
-            </h4>
+            <h4 className="absolute left-[91.5%] top-1/2 -translate-y-1/2 text-xl font-bold">Grave</h4>
+        </div>
+    );
+}
+
+export function CombatBoardPersonSection({ deck, onClickCard }: { deck: Deck; onClickCard: (cl: CardLocation) => void }) {
+    const { selectedCardLocation, targetCardLocations } = useContext(UIStateContext);
+
+    const { owner } = deck;
+
+    return (
+        <div className="flex w-full items-center justify-between p-4">
+            <HandView
+                deck={deck}
+                onClick={(i) => i && onClickCard(i)}
+                selectedCardIndex={
+                    selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.Hand
+                        ? selectedCardLocation.index
+                        : undefined
+                }
+                targetCardLocations={targetCardLocations}
+            />
+            <div className="flex flex-row gap-4 overflow-x-auto p-2">
+                <CardView
+                    card={deck.generalCard}
+                    onClick={() => onClickCard(new CardLocation(deck, DeckArea.General))}
+                    isSelected={selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.General}
+                    isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.General)}
+                />
+                <CardView
+                    card={deck.reserveStack.cards[0]}
+                    onClick={() => onClickCard(new CardLocation(deck, DeckArea.Reserves))}
+                    isSelected={selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.Reserves}
+                    isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.Reserves)}
+                />
+                <CardView
+                    card={deck.gravePile.cards[0]}
+                    onClick={() => onClickCard(new CardLocation(deck, DeckArea.Grave))}
+                    isSelected={selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.Grave}
+                    isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.Grave)}
+                />
+            </div>
         </div>
     );
 }
