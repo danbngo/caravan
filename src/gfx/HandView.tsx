@@ -1,3 +1,4 @@
+import { Board } from "../classes/Board";
 import { CardLocation } from "../classes/CardLocation";
 import { CardLocations } from "../classes/CardLocations";
 import { Deck } from "../classes/Deck";
@@ -6,11 +7,13 @@ import { CardView } from "./CardView";
 import { CardClickHandler } from "./interfaces";
 
 export function HandView({
+    board,
     deck,
     onClick,
     selectedCardIndex,
     targetCardLocations
 }: {
+    board: Board;
     deck: Deck;
     onClick?: CardClickHandler | undefined;
     selectedCardIndex?: number | undefined;
@@ -21,6 +24,7 @@ export function HandView({
         <div className="flex flex-row gap-4 overflow-x-auto p-2">
             {hand.cards.map((card, index) => (
                 <CardView
+                    board={board}
                     key={index}
                     isSelected={selectedCardIndex == index}
                     isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.Hand, index)}

@@ -4,22 +4,41 @@ import { Move } from "../classes/Move";
 import { DeckArea } from "../enums";
 import { TargetingProps } from "../interfaces/TargetingProps";
 
+export function canCardSwap(targetingProps: TargetingProps) {
+    const { index, card, opposingDeck } = targetingProps;
+    const enemyCard = opposingDeck.hand.cards[index];
+    const [ctIDs] = [card.traitIDs];
+    if (ctIDs.includes("IMMOBILE") || (enemyCard && enemyCard.abilityIDs.includes("CAPTIVATE"))) return false;
+    if (card.tapped || card.dead) return false;
+    return true;
+}
+
 export function calcSwappableLocations(targetingProps: TargetingProps) {
     const { index, deck, card, opposingDeck } = targetingProps;
     const validLocations: CardLocations = new CardLocations([deck, opposingDeck]);
-    if (index > 0) {
-        validLocations.addLocations(deck, DeckArea.Hand, [index - 1]);
-    }
-    if (index < deck.hand.size - 1) {
-        validLocations.addLocations(deck, DeckArea.Hand, [index + 1]);
-    }
-    if (card.abilityIDs.includes("MANEUVER")) {
-        for (let i = 0; i < deck.hand.size; i++) {
-            const cardAtIndex = deck.hand.cards[i];
-            if (cardAtIndex == card) continue;
+    const [caIDs] = [card.abilityIDs];
+    console.log("checking for card swappable locations");
+
+    if (!canCardSwap(targetingProps)) return validLocations;
+    console.log("card can swap");
+
+    for (let i = 0; i < deck.hand.size; i++) {
+        const diff = Math.abs(i - index);
+        if (diff == 0) continue;
+        const cardAtIndex = deck.hand.cards[i];
+        if (diff !== 1) {
+            if (!caIDs.includes("MANEUVER")) continue;
             if (cardAtIndex && !cardAtIndex.abilityIDs.includes("MANEUVER")) continue;
-            validLocations.addLocations(deck, DeckArea.Hand, [i]);
         }
+        if (cardAtIndex) {
+            const tempTargetingProps: TargetingProps = {
+                ...targetingProps,
+                index: i,
+                card: cardAtIndex
+            };
+            if (!canCardSwap(tempTargetingProps)) continue;
+        }
+        validLocations.addLocations(deck, DeckArea.Hand, [i]);
     }
     return validLocations;
 }

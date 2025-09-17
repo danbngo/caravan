@@ -11,6 +11,7 @@ import { gs } from "../classes/Game";
 import { Move } from "../classes/Move";
 import { CardLocation } from "../classes/CardLocation";
 import { Deck } from "../classes/Deck";
+import { ActionButton } from "./ActionButton";
 
 type OnActClickHandler = (deck: Deck, deckArea: DeckArea, index?: number | undefined) => void;
 
@@ -108,11 +109,24 @@ export function CombatBoard() {
                     ) : selectedCardLocation?.person == Person.Player &&
                       selectedCardLocation.deckArea == DeckArea.Hand &&
                       turn == Person.Player ? (
-                        <CardActionMenu onAction={onClickCardAction} />
+                        <CardActionMenu board={gs.board} onAction={onClickCardAction} />
                     ) : (
                         <div />
                     )}
-                    <TurnMenu onAction={onClickTurnAction} />
+                    {targetingAction && turn == Person.Player ? (
+                        <div className="w-[200px]">
+                            <ActionButton
+                                label="Cancel"
+                                action="Cancel"
+                                onAction={() => {
+                                    setTargetingAction(undefined);
+                                    setTargetCardLocations(undefined);
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <TurnMenu onAction={onClickTurnAction} />
+                    )}
                 </div>
             </div>
         </div>
@@ -141,6 +155,7 @@ export function CombatBoardPersonSection({ deck, onClickCard }: { deck: Deck; on
     return (
         <div className="flex w-full items-center justify-between p-4">
             <HandView
+                board={gs.board}
                 deck={deck}
                 onClick={(i) => i && onClickCard(i)}
                 selectedCardIndex={
@@ -152,19 +167,22 @@ export function CombatBoardPersonSection({ deck, onClickCard }: { deck: Deck; on
             />
             <div className="flex flex-row gap-4 overflow-x-auto p-2">
                 <CardView
+                    board={gs.board}
                     card={deck.generalCard}
                     onClick={() => onClickCard(new CardLocation(deck, DeckArea.General))}
                     isSelected={selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.General}
                     isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.General)}
                 />
                 <CardView
+                    board={gs.board}
                     card={deck.reserveStack.cards[0]}
                     onClick={() => onClickCard(new CardLocation(deck, DeckArea.Reserves))}
                     isSelected={selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.Reserves}
                     isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.Reserves)}
                 />
                 <CardView
-                    card={deck.gravePile.cards[0]}
+                    board={gs.board}
+                    card={deck.graveStack.cards[0]}
                     onClick={() => onClickCard(new CardLocation(deck, DeckArea.Grave))}
                     isSelected={selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.Grave}
                     isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.Grave)}

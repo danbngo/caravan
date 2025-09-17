@@ -21,4 +21,10 @@ export class Stack {
         if (placeAt == "bottom") this.cards.push(card);
         else this.cards.unshift(card);
     }
+
+    removeCard(card: UnitCard) {
+        const index = this.cards.indexOf(card);
+        if (index == -1) throw new Error("card wasnt present in stack!");
+        this.cards.splice(index, 1);
+    }
 }

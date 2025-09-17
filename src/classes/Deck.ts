@@ -3,7 +3,6 @@ import { CardPosition, DeckArea, Person } from "../enums";
 import { CardLocation } from "./CardLocation";
 import { GeneralCard } from "./GeneralCard";
 import { Hand } from "./Hand";
-import { Pile } from "./Pile";
 import { Stack } from "./Stack";
 import { UnitCard } from "./UnitCard";
 
@@ -13,7 +12,7 @@ export class Deck {
     unitCards: Set<UnitCard>;
     reserveStack: Stack;
     hand: Hand;
-    gravePile: Pile;
+    graveStack: Stack;
 
     constructor(
         {
@@ -32,23 +31,33 @@ export class Deck {
         this.generalCard = GeneralCard.copy(generalCard || GENERAL_CARDS.GENERAL);
         this.reserveStack = new Stack({ cards: [...this.unitCards] });
         this.hand = new Hand();
-        this.gravePile = new Pile();
+        this.graveStack = new Stack();
         this.reset();
     }
 
     reset() {
         this.reserveStack = new Stack({ cards: [...this.unitCards] });
         this.hand = new Hand();
-        this.gravePile = new Pile();
+        this.graveStack = new Stack();
         this.reserveStack.shuffle();
         for (const card of this.unitCards) card.position = CardPosition.Reserve;
         this.generalCard.position = CardPosition.General;
+        this.generalCard.mp = 0;
+    }
+
+    getAdjacentCardLocations(cardLocation: CardLocation) {
+        const { deckArea, index } = cardLocation;
+        if (deckArea !== DeckArea.Hand) return [];
+        const result: CardLocation[] = [];
+        if (index > 0) result.push(new CardLocation(this, DeckArea.Hand, index - 1));
+        if (index < this.hand.size) result.push(new CardLocation(this, DeckArea.Hand, index + 1));
+        return result;
     }
 
     getCardAtLocation(cardLocation: CardLocation) {
         const { deckArea, index } = cardLocation;
         if (deckArea == DeckArea.General) return this.generalCard;
-        else if (deckArea == DeckArea.Grave) return this.gravePile.cards[index];
+        else if (deckArea == DeckArea.Grave) return this.graveStack.cards[index];
         else if (deckArea == DeckArea.Reserves) return this.reserveStack.cards[index];
         else if (deckArea == DeckArea.Hand) return this.hand.cards[index];
         else throw new Error("unrecognized deckarea");
@@ -88,6 +97,6 @@ export class Deck {
         buriedCard.hp = 0;
         buriedCard.tap(); //should never matter but cant be too safe!
         buriedCard.position = CardPosition.Grave;
-        this.gravePile.cards.unshift(buriedCard);
+        this.graveStack.addCard(buriedCard, "bottom");
     }
 }

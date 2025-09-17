@@ -5,7 +5,6 @@ import { ActionButton, ActionButtonProps } from "./ActionButton";
 //remember - can only be used by player
 export function TurnMenu({ onAction }: { onAction: (a: TurnAction) => void }) {
     const validMoves = gs.board.calcValidUnitMoves(Person.Player);
-    console.log("remaining valid moves:", validMoves);
     let buttons: ActionButtonProps[] = [];
     buttons = [
         {

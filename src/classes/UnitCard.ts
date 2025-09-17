@@ -78,7 +78,7 @@ export class UnitCard {
 
     heal(forHp: number) {
         const oldHp = this.hp;
-        this.hp = Math.max(this.maxHp, this.hp + forHp);
+        this.hp = Math.min(this.maxHp, this.hp + forHp);
         return this.hp - oldHp;
     }
 

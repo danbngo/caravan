@@ -33,4 +33,10 @@ export class GeneralCard extends UnitCard {
             [...card.traitIDs]
         );
     }
+
+    healMp(forMp: number) {
+        const oldMp = this.mp;
+        this.mp = Math.min(this.maxMp, this.mp + forMp);
+        return this.mp - oldMp;
+    }
 }

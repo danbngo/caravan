@@ -7,6 +7,7 @@ export function CardWrapper({
     isSelected,
     isTargeted,
     title,
+    description,
     displayState,
     redTint
 }: {
@@ -15,6 +16,7 @@ export function CardWrapper({
     isTargeted?: boolean | undefined;
     children?: (JSX.Element | false | undefined)[];
     title?: string | undefined;
+    description?: string | undefined;
     displayState?: CardDisplayState;
     redTint?: number | undefined;
 }) {
@@ -62,7 +64,9 @@ export function CardWrapper({
         relative z-30 h-full w-full p-2 border rounded-xl
     `}
             >
-                {title ? <div className="text-center">{`${title}${titleIcon}`}</div> : null}
+                {title ? (
+                    <div className="text-center cursor-pointer" title={description || ""}>{`${title}${titleIcon}`}</div>
+                ) : null}
                 {children}
             </div>
         </div>

@@ -2,7 +2,7 @@ import { CardAction, DeckArea, Person, TurnAction } from "../enums";
 import { TargetingProps } from "../interfaces/TargetingProps";
 import { attackCard, calcAttackableLocations } from "../sys/attack";
 import { drawCard } from "../sys/draw";
-import { retreatCard } from "../sys/retreat";
+import { canWithdraw, withdrawCard } from "../sys/withdraw";
 import { calcSwappableLocations, swapCard } from "../sys/swap";
 import { CardLocation } from "./CardLocation";
 import { CardLocations } from "./CardLocations";
@@ -35,11 +35,21 @@ export class Board {
     nextTurn() {
         if (this.turn == Person.Player) {
             this.turn = Person.Enemy;
+            for (const card of this.playerDeck.hand.cards) {
+                if (card && !card.tapped) {
+                    if (card?.traitIDs.includes("LIVING")) card.heal(1);
+                }
+            }
             for (const card of this.enemyDeck.unitCards) card.untap();
             this.addMessage(`Player turn: ended.`);
             this.addMessage(`Enemy turn: started.`);
         } else {
             this.turn = Person.Player;
+            for (const card of this.enemyDeck.hand.cards) {
+                if (card && !card.tapped) {
+                    if (card?.traitIDs.includes("LIVING")) card.heal(1);
+                }
+            }
             for (const card of this.playerDeck.unitCards) card.untap();
             this.round++;
             this.addMessage(`Enemy turn: ended.`);
@@ -57,8 +67,7 @@ export class Board {
 
     calcValidUnitMoves(person: Person) {
         const moves: Move[] = [];
-        const { deck } = this.calcPersonMetadata(person);
-        const cardDrawn = deck.owner == Person.Player ? this.playerCardDrawn : this.enemyCardDrawn;
+        const { deck, cardDrawn } = this.calcPersonMetadata(person);
         deck.hand.cards.forEach((selectedCard, handIndex) => {
             const selectedCardLocation = new CardLocation(deck, DeckArea.Hand, handIndex);
             if (!selectedCard) {
@@ -68,7 +77,12 @@ export class Board {
                 return;
             }
             if (selectedCard.tapped || selectedCard.dead) return;
-            moves.push(new Move(CardAction.Retreat, selectedCardLocation));
+            const [caIDs] = [selectedCard.abilityIDs];
+            console.log(caIDs);
+            const targetingProps = this.calcTargetingProps(selectedCardLocation);
+            if (canWithdraw(targetingProps)) {
+                moves.push(new Move(CardAction.Withdraw, selectedCardLocation));
+            }
             const validMoveLocations = this.calcTargetableLocations(selectedCardLocation, CardAction.Swap).locations;
             for (const i of validMoveLocations) {
                 //const targetCard = this.playerDeck.hand.cards[i.index];
@@ -92,8 +106,8 @@ export class Board {
             drawCard(this, move);
         } else if (action == CardAction.Swap) {
             swapCard(this, move);
-        } else if (action == CardAction.Retreat) {
-            retreatCard(this, move);
+        } else if (action == CardAction.Withdraw) {
+            withdrawCard(this, move);
         } else if (action == CardAction.Attack) {
             attackCard(this, move);
         } else throw new Error("unrecognized action type");
@@ -103,16 +117,22 @@ export class Board {
         const opponent = Person.Enemy ? Person.Player : Person.Enemy;
         const deck = person == Person.Enemy ? this.enemyDeck : this.playerDeck;
         const opposingDeck = person == Person.Player ? this.enemyDeck : this.playerDeck;
-        return { person, opponent, deck, opposingDeck };
+        const cardDrawn = person == Person.Player ? this.playerCardDrawn : this.enemyCardDrawn;
+        return { person, opponent, deck, opposingDeck, cardDrawn };
     }
 
     calcTargetableLocations(selectedCardLocation: CardLocation, cardAction: CardAction): CardLocations {
+        const targetingProps = this.calcTargetingProps(selectedCardLocation);
+        if (cardAction == CardAction.Swap) return calcSwappableLocations(targetingProps);
+        if (cardAction == CardAction.Attack) return calcAttackableLocations(targetingProps);
+        else throw new Error("unrecognized card action!");
+    }
+
+    calcTargetingProps(selectedCardLocation: CardLocation) {
         const { person, index, card } = selectedCardLocation;
         if (!card) throw new Error("no point calcing targets if no card at location!");
         const { deck, opposingDeck } = this.calcPersonMetadata(person);
         const targetingProps: TargetingProps = { person, index, card, deck, opposingDeck };
-        if (cardAction == CardAction.Swap) return calcSwappableLocations(targetingProps);
-        if (cardAction == CardAction.Attack) return calcAttackableLocations(targetingProps);
-        else throw new Error("unrecognized card action!");
+        return targetingProps;
     }
 }

@@ -1,32 +1,28 @@
 import { Ability } from "../classes/Ability";
 
 export const ABILITIES = {
-    REACH: new Ability(
-        "Reach",
-        "⚜️",
-        `Hit first in melee (unless enemy also has reach). If the enemy is slain, this unit suffers no damage.`
-    ),
-    FORMATION: new Ability("Formation", "⚜️", `Suffer 1/2 melee damage from units with charge.`),
-    RANGE: new Ability("Range", "🔭", `Hit first in ranged (unless enemy also has range). If foe is slain, take no damage.`),
-    MANEUVER: new Ability("Maneuver", "", "Can swap with any empty space or any other unit with maneuver."),
-    SKIRMISH: new Ability("Skirmish", "🪃", `When this unit attacks, if the enemy has any ⚔️, skip melee combat.`),
-    CHARGE: new Ability("Charge", "🐎", `When this unit attacks, if the enemy has any 🏹, skip ranged combat.`),
-    ASSASSINATE: new Ability(
-        "Assassinate",
-        "🥷",
-        `When attacking wounded living enemies, hit first for 3x damage. If foe is slain, take no damage.`
-    ),
-    FRENZY: new Ability("Frenzy", "😡", "When attacking, melee combat is performed up to 2 times."),
-    CLEAVE: new Ability("Cleave", "", "When attacking in melee, if the foe is slain, do 1 damage to adjacent foes."),
+    REND: new Ability("Rend", "🪚", "After slaying a foe, remove it from the game instead of burying."),
+    CLEAVE: new Ability("Cleave", "🪓", "After slaying a foe, do 1 damage to adjacent foes."),
+    TERRORIZE: new Ability("Terrorize", "🎃", "After attacking a foe, force it to withdraw"),
+    //INSPIRE: new Ability("Inspire", "", `Adjacent units gain +1 melee attack.`),
+    REACH: new Ability("Reach", "⚜️", `Can attack foes diagonally.`),
+    FORMATION: new Ability("Formation", "⚜️", `Take 1/2 damage when there are no adjacent empty spaces.`),
+    BOMBARD: new Ability("Bombard", "🎯", `Can attack any foe in 🏹.`),
+    MANEUVER: new Ability("Maneuver", "🏃", "Can swap with any empty space or other units with 🏃."),
+    SKIRMISH: new Ability("Skirmish", "🪃", `Withdraw immediately after attacking.`),
+    CHARGE: new Ability("Charge", "🐎", `Can attack after swapping.`),
+    DEVOUR: new Ability("Devour", "👄", "After slaying a living foe, recover all HP."),
+    ASSASSINATE: new Ability("Assassinate", "🥷", `Do 3x damage vs wounded living enemies.`),
+    FRENZY: new Ability("Frenzy", "😡", "Immediately attack back in ⚔️ after being attacked in ⚔️."),
     //TACTICIAN: new Ability("Tactician", "", "When defending, disable the attacker's abilities."),
-    TERRORIZE: new Ability("Terrorize", "", "When attacking, bypass living defenders."),
-    REND: new Ability("Rend", "", "When slaying a foe, it's removed from the game instead of buried."),
-    MECHANIC: new Ability(
-        "Mechanic",
-        "",
-        "Do 2x melee damage to contraptions. At round's end, heal adjacent contraptions for 1 hp."
+    MECHANIC: new Ability("Mechanic", "🛠️", "At round's end, heal adjacent contraptions for 1 hp."),
+    MEDIC: new Ability("Medic", "❤️‍🩹", "At round's end, heal adjacent living for 1 hp."),
+    INFECT: new Ability(
+        "Infect",
+        "🦠",
+        "After slaying a living foe in ⚔️, replace it with a copy of this card, then add to bottom of your reserves."
     ),
-    MEDIC: new Ability("Medic", "", "At round's end, heal adjacent living for 1 hp.")
+    CAPTIVATE: new Ability("Captivate", "🎻", "Foes directly opposite this one cannot withdraw or swap.")
 };
 export const ALL_ABILITIES = Object.values(ABILITIES);
 export type AbilityID = keyof typeof ABILITIES;
