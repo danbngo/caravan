@@ -1,13 +1,10 @@
-export enum Person {
-    Player = "Player",
-    Enemy = "Enemy"
-}
-
 export enum CardAction {
-    Draw = "Draw",
     Swap = "Swap",
     Attack = "Attack",
-    Withdraw = "Withdraw"
+    Withdraw = "Withdraw",
+    Wait = "Wait",
+    Un_Wait = "Un-Wait",
+    Draw = "Draw"
 }
 
 export enum TurnAction {
@@ -24,14 +21,14 @@ export enum DeckArea {
 export enum CardDisplayState {
     Normal = "Normal",
     Tapped = "Tapped",
-    Reserve = "Reserve",
+    Idle = "Idle",
     Dead = "Dead",
     Empty = "Empty"
 }
 
-export enum CardPosition {
+/*export enum CardPosition {
     Hand = "Hand",
     General = "General",
     Reserve = "Reserve",
     Grave = "Grave"
-}
+}*/

@@ -5,7 +5,7 @@ import { UnitCard } from "../classes/UnitCard";
 export function endTurnForCard(board: Board, cardLocation: CardLocation) {
     const { card, deck } = cardLocation;
     if (!card) return;
-    const adjacentLocations: CardLocation[] = deck.getAdjacentCardLocations(cardLocation);
+    const adjacentLocations: CardLocation[] = deck.calcAdjacentHandLocations(cardLocation.index);
     const adjacentCards: UnitCard[] = adjacentLocations.map((al) => al.card).filter((card) => card !== undefined);
     const [caIDs] = [card.abilityIDs];
     if (caIDs.includes("MEDIC")) {

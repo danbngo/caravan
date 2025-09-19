@@ -21,7 +21,7 @@ export function HandView({
 }) {
     const { hand } = deck;
     return (
-        <div className="flex flex-row gap-4 overflow-x-auto p-2">
+        <div className="flex flex-row gap-4 p-2">
             {hand.cards.map((card, index) => (
                 <CardView
                     board={board}

@@ -1,43 +1,48 @@
 import { ABILITIES, AbilityID } from "../defs/ABILITIES";
 import { TraitID, TRAITS } from "../defs/TRAITS";
-import { CardPosition, Person } from "../enums";
+import { CardAction } from "../enums";
 import { Ability } from "./Ability";
+import { CardLocation } from "./CardLocation";
+import { Person } from "./Person";
 import { Trait } from "./Trait";
 
 export class UnitCard {
     owner: Person | undefined;
     name: string;
     description: string;
+    level: number;
     hp: number;
     maxHp: number;
     attack: number;
-    rangedAttack: number;
     abilityIDs: AbilityID[];
     traitIDs: TraitID[];
-    position: CardPosition;
     tapped?: boolean;
+    waiting?: boolean;
+    location?: CardLocation | undefined;
+    restrictedActions: CardAction[]; //cleared on next untap
 
     constructor(
         name: string,
         description: string,
+        level: number,
         hp: number,
         attack: number,
-        rangedAttack: number,
         abilityIDs: AbilityID[] = [],
         traitIDs: TraitID[] = [],
         owner?: Person | undefined
     ) {
         this.name = name;
         this.description = description;
+        this.level = level;
         this.hp = hp;
         this.maxHp = hp;
         this.attack = attack;
-        this.rangedAttack = rangedAttack;
         this.abilityIDs = abilityIDs;
         this.traitIDs = traitIDs;
         this.tapped = false;
-        this.position = CardPosition.Reserve;
         this.owner = owner;
+        this.restrictedActions = [];
+        this.waiting = false;
     }
 
     get abilities() {
@@ -67,9 +72,9 @@ export class UnitCard {
         return new UnitCard(
             card.name,
             card.description,
+            card.level,
             card.maxHp,
             card.attack,
-            card.rangedAttack,
             [...card.abilityIDs],
             [...card.traitIDs],
             newOwner || card.owner
@@ -82,14 +87,20 @@ export class UnitCard {
         return this.hp - oldHp;
     }
 
+    damage(forHp: number) {
+        this.hp = Math.max(0, this.hp - forHp);
+    }
+
     tap() {
         this.tapped = true;
     }
     untap() {
         this.tapped = false;
+        this.waiting = false;
+        this.restrictedActions = [];
     }
 
     get dead() {
-        return this.hp <= 0 || this.position == CardPosition.Grave;
+        return this.hp <= 0;
     }
 }

@@ -1,7 +1,8 @@
-import { Person, TurnAction } from "../enums";
+import { TurnAction } from "../enums";
 import { randomMemberOfArray } from "../utils/rndUtils";
 import { Board } from "./Board";
 import { Move } from "./Move";
+import { Person } from "./Person";
 
 export class AI {
     person: Person;
@@ -12,13 +13,15 @@ export class AI {
         this.board = board;
     }
 
-    chooseMove() {
-        const unitMoves = this.board.calcValidUnitMoves(this.person);
-        if (unitMoves.length == 0) {
-            return new Move(TurnAction.EndTurn);
+    chooseMove(): TurnAction | Move {
+        const reserveMoves = this.board.calcValidReserveMoves(this.person);
+        const handMoves = this.board.calcValidHandMoves(this.person);
+        const moves = [...reserveMoves, ...handMoves];
+        if (moves.length == 0) {
+            return TurnAction.EndTurn;
         }
-        const move = randomMemberOfArray(unitMoves);
-        console.log("executing move:", move, "out of potential moves:", unitMoves);
+        const move = randomMemberOfArray(moves);
+        console.log("executing move:", move, "out of potential moves:", moves);
         return move;
     }
 }

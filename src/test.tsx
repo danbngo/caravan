@@ -5,25 +5,26 @@ import { UnitCard } from "./classes/UnitCard";
 import { gs } from "./classes/Game";
 import { Board } from "./classes/Board";
 import { AI } from "./classes/AI";
-import { Person } from "./enums";
+import { PEOPLE } from "./defs/PEOPLE";
+import { Person } from "./classes/Person";
 
 function makeRandomDeck(owner: Person) {
-    const generalCard = GENERAL_CARDS.GENERAL;
-    const unitCards: Set<UnitCard> = new Set();
+    const general = GENERAL_CARDS.GENERAL;
+    const units: Set<UnitCard> = new Set();
     for (let i = 0; i < 10; i++) {
         const card = randomMemberOfArray(ALL_UNIT_CARDS);
-        unitCards.add(card);
+        units.add(card);
     }
-    return new Deck({ owner, unitCards, generalCard });
+    return new Deck({ owner, units, general });
 }
 
 export function startTestGame() {
-    gs.playerDeck = makeRandomDeck(Person.Player);
+    gs.playerDeck = makeRandomDeck(PEOPLE.PLAYER);
 
     gs.board = new Board({
         playerDeck: gs.playerDeck,
-        enemyDeck: makeRandomDeck(Person.Enemy)
+        enemyDeck: makeRandomDeck(PEOPLE.ENEMY)
     });
 
-    gs.enemyAI = new AI({ board: gs.board, person: Person.Enemy });
+    gs.enemyAI = new AI({ board: gs.board, person: PEOPLE.ENEMY });
 }

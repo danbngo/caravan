@@ -2,20 +2,18 @@ import { Trait } from "../classes/Trait";
 
 export const TRAITS = {
     //species, should be mutually exclusive (mostly)
-    GHOSTLY: new Trait("Ghostly", "👻", "Can bypass non-👻 foes."),
-    VAMPIRIC: new Trait("Vampiric", "🧛", "After attacking a ❤️ foe, recover the amount of damage dealt."),
-    UNDEAD: new Trait("Undead", "💀", "After being slain, add this card to reserves instead of burying it."),
-    ACCURSED: new Trait("Accursed", "", "If slain by 🙏/🔥, remove this unit from the game."),
-    DEMONIC: new Trait("Demonic", "😈", "Take no damage from 🔥."),
-    DIVINE: new Trait("Divine", "🙏", "Do 2x damage to 💀/😈."),
-    FIERY: new Trait("Fiery", "🔥", "Do 2x damage to 🛞."),
-    IMMOBILE: new Trait("Immobile", "🏰", "Cannot attack, withdraw, or swap. Take 1/2 damage from non-💣."),
-    CONTRAPTION: new Trait("Contraption", "🛞", "Do 2x damage to 🏰/🗿. Take 1/2 damage from non-🔥."),
     LIVING: new Trait("Living", "❤️", "If untapped at round's end, heal for 1 hp."),
+    UNDEAD: new Trait("Undead", "💀", "When slain, add this card to reserves instead of burying it."),
+    DEMONIC: new Trait("Demonic", "😈", "Take no damage from 🔥."),
+    DIVINE: new Trait("Divine", "🙏", "Do 2x damage to 💀/😈. If slain, they are removed from the game."),
+    FIERY: new Trait("Fiery", "🔥", "Do 2x damage to 💀/🛞."),
+    BUILDING: new Trait("Building", "🏰", "Take 1/2 damage from non-🛞/🗿. Cannot attack, withdraw, or swap."),
+    CONTRAPTION: new Trait("Contraption", "🛞", "Do 2x damage to 🏰/🗿."),
 
     //physical traits
-    GIANT: new Trait("Giant", "🗿", "Non-🗿 can always bypass 🗿 when attacking."),
-    FLYING: new Trait("Flying", "🪽", "Can bypass non-🪽 foes if they have no 🏹."),
+    FLYING: new Trait("Flying", "🪽", "Can bypass non-🪽/🗿."),
+    GIANT: new Trait("Giant", "🗿", "Do 2x damage to 🏰."),
+    STEALTHY: new Trait("Stealthy", "🥷", "Can bypass 🗿/🏰."),
 
     //mental traits
     OATH: new Trait("Oath", "🎖️", "Cannot withdraw."),

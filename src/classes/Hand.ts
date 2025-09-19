@@ -28,4 +28,10 @@ export class Hand {
     rationalize() {
         while (this.cards.length < this.size) this.cards.push(undefined);
     }
+
+    removeCard(card: UnitCard) {
+        const index = this.cards.indexOf(card);
+        if (index == -1) throw new Error("card wasnt present in hand!");
+        this.cards[index] = undefined;
+    }
 }

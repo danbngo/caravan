@@ -1,25 +1,28 @@
 import { Board } from "../classes/Board";
 import { CardLocations } from "../classes/CardLocations";
 import { Move } from "../classes/Move";
-import { DeckArea } from "../enums";
-import { TargetingProps } from "../interfaces/TargetingProps";
+import { UnitCard } from "../classes/UnitCard";
+import { PEOPLE } from "../defs/PEOPLE";
+import { CardAction, DeckArea } from "../enums";
 
-export function canCardSwap(targetingProps: TargetingProps) {
-    const { index, card, opposingDeck } = targetingProps;
-    const enemyCard = opposingDeck.hand.cards[index];
+export function canSwap(board: Board, card: UnitCard) {
+    const { index, foeDeck } = board.calcCardMetadata(card);
+    if (card.tapped || card.restrictedActions.includes(CardAction.Swap)) return false;
+    const enemyCard = foeDeck.hand.cards[index];
     const [ctIDs] = [card.traitIDs];
-    if (ctIDs.includes("IMMOBILE") || (enemyCard && enemyCard.abilityIDs.includes("CAPTIVATE"))) return false;
+    if (ctIDs.includes("BUILDING") || (enemyCard && enemyCard.abilityIDs.includes("CAPTIVATE"))) return false;
     if (card.tapped || card.dead) return false;
     return true;
 }
 
-export function calcSwappableLocations(targetingProps: TargetingProps) {
-    const { index, deck, card, opposingDeck } = targetingProps;
-    const validLocations: CardLocations = new CardLocations([deck, opposingDeck]);
+export function calcSwappableLocations(board: Board, card: UnitCard) {
+    const { deck, foeDeck, index } = board.calcCardMetadata(card);
+
+    const validLocations: CardLocations = new CardLocations([deck, foeDeck]);
     const [caIDs] = [card.abilityIDs];
     console.log("checking for card swappable locations");
 
-    if (!canCardSwap(targetingProps)) return validLocations;
+    if (!canSwap(board, card)) return validLocations;
     console.log("card can swap");
 
     for (let i = 0; i < deck.hand.size; i++) {
@@ -31,12 +34,7 @@ export function calcSwappableLocations(targetingProps: TargetingProps) {
             if (cardAtIndex && !cardAtIndex.abilityIDs.includes("MANEUVER")) continue;
         }
         if (cardAtIndex) {
-            const tempTargetingProps: TargetingProps = {
-                ...targetingProps,
-                index: i,
-                card: cardAtIndex
-            };
-            if (!canCardSwap(tempTargetingProps)) continue;
+            if (!canSwap(board, cardAtIndex)) continue;
         }
         validLocations.addLocations(deck, DeckArea.Hand, [i]);
     }
@@ -44,31 +42,28 @@ export function calcSwappableLocations(targetingProps: TargetingProps) {
 }
 
 export function swapCard(board: Board, move: Move) {
-    const { selectedCardLocation, targetCardLocation } = move;
-    if (!selectedCardLocation || !targetCardLocation) throw new Error("selected and target card locations must be specified!");
+    const { card, targetLocation } = move;
+    if (!targetLocation) throw new Error("selected and target card locations must be specified!");
 
-    const selectedCard = selectedCardLocation.card;
-    const targetCard = targetCardLocation.card;
-    if (!selectedCard || !selectedCardLocation || !targetCardLocation)
-        throw new Error("selected card, card location, target card location must be specified!");
-    const { person } = selectedCardLocation;
-    const { deck } = board.calcPersonMetadata(person);
+    const targetCard = targetLocation.card;
+    const { deck, index } = board.calcCardMetadata(card);
 
-    deck.swapCard(selectedCardLocation.index, targetCardLocation.index);
-    selectedCard.tap();
+    deck.swapCard(index, targetLocation.index);
+    if (card.abilityIDs.includes("CHARGE")) card.restrictedActions.push(CardAction.Swap, CardAction.Withdraw);
+    else card.tap();
     targetCard?.tap();
 
-    if (board.isPlayerTurn) {
+    if (board.turn == PEOPLE.PLAYER) {
         if (targetCard) {
-            board.addMessage(`You swap places: ${selectedCard.name} with ${targetCard.name}.`);
+            board.addMessage(`You swap places: ${card.name} with ${targetCard.name}.`);
         } else {
-            board.addMessage(`You move: ${selectedCard.name}.`);
+            board.addMessage(`You move: ${card.name}.`);
         }
     } else {
         if (targetCard) {
-            board.addMessage(`Enemy swaps places: ${selectedCard.name} with ${targetCard.name}.`);
+            board.addMessage(`Enemy swaps places: ${card.name} with ${targetCard.name}.`);
         } else {
-            board.addMessage(`Enemy moves: ${selectedCard.name}.`);
+            board.addMessage(`Enemy moves: ${card.name}.`);
         }
     }
 }

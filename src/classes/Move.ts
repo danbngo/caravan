@@ -1,17 +1,14 @@
-import { CardAction, TurnAction } from "../enums";
+import { CardAction } from "../enums";
 import { CardLocation } from "./CardLocation";
+import { UnitCard } from "./UnitCard";
 
 export class Move {
-    action: CardAction | TurnAction;
-    selectedCardLocation?: CardLocation | undefined;
-    targetCardLocation?: CardLocation | undefined;
-    constructor(
-        action: CardAction | TurnAction,
-        selectedCardLocation?: CardLocation | undefined,
-        targetCardLocation?: CardLocation | undefined
-    ) {
+    action: CardAction;
+    card: UnitCard;
+    targetLocation?: CardLocation | undefined;
+    constructor(action: CardAction, card: UnitCard, targetLocation?: CardLocation | undefined) {
         this.action = action;
-        this.selectedCardLocation = selectedCardLocation;
-        this.targetCardLocation = targetCardLocation;
+        this.card = card;
+        this.targetLocation = targetLocation;
     }
 }
