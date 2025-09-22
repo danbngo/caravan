@@ -1,7 +1,7 @@
 import "./index.css";
 import { createRoot } from "react-dom/client";
-import { CombatBoard } from "./gfx/CombatBoard";
-import { UIStateContextProvider } from "./gfx/UIContext";
+import { CombatBoard } from "./gfx/CombatBoard/CombatBoard";
+import { UIStateContextProvider } from "./gfx/Common/UIContext";
 import { startTestGame } from "./test";
 
 startTestGame();

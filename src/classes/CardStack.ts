@@ -1,11 +1,15 @@
 import { randomizeArrayOrder } from "../utils/rndUtils";
 import { UnitCard } from "./UnitCard";
 
-export class Stack {
+export class CardStack {
     cards: UnitCard[];
 
     constructor({ cards }: { cards?: UnitCard[] } = {}) {
         this.cards = cards || [];
+    }
+
+    get length() {
+        return this.cards.length;
     }
 
     shuffle() {
@@ -13,7 +17,7 @@ export class Stack {
     }
 
     drawCard() {
-        if (this.cards.length == 0) throw new Error("no cards left to draw!");
+        if (this.length == 0) throw new Error("no cards left to draw!");
         return this.cards.shift();
     }
 

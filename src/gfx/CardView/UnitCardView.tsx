@@ -1,34 +1,42 @@
-import { Board } from "../classes/Board";
-import { UnitCard } from "../classes/UnitCard";
-import { PEOPLE } from "../defs/PEOPLE";
-import { CardDisplayState, DeckArea } from "../enums";
+import { UnitCard } from "../../classes/UnitCard";
+import { CardDisplayState, DeckArea } from "../../enums";
 import { CardWrapper } from "./CardWrapper";
-import { CardClickHandler } from "./interfaces";
+import { CardClickHandler } from "../Common/types";
+import { gs } from "../../classes/Game";
 
-function calcDisplayState(board: Board, card: UnitCard) {
+function calcDisplayState(card: UnitCard) {
     if (!card.location) return CardDisplayState.Normal;
     if (card.dead) return CardDisplayState.Dead;
     const { deckArea } = card.location;
-    if ((deckArea == DeckArea.General || deckArea == DeckArea.Hand) && card.tapped) return CardDisplayState.Tapped;
+    if ((deckArea == DeckArea.General || deckArea == DeckArea.Line) && card.tapped) return CardDisplayState.Tapped;
     if (card.waiting) return CardDisplayState.Idle;
     return CardDisplayState.Normal;
 }
 
+const levelIcons: Record<number, string> = {
+    1: "1️⃣",
+    2: "2️⃣",
+    3: "3️⃣",
+    4: "4️⃣",
+    5: "5️⃣",
+    6: "6️⃣",
+    7: "7️⃣",
+    8: "8️⃣"
+};
+
 export function UnitCardView({
-    board,
     card,
     onClick,
     isSelected,
     isTargeted
 }: {
-    board: Board;
     card: UnitCard;
     onClick?: CardClickHandler | undefined;
     isSelected?: boolean | undefined;
     isTargeted?: boolean | undefined;
 }) {
-    const { name, description, attack, hp, maxHp, abilities, traits, location } = card;
-    const displayState = calcDisplayState(board, card);
+    const { name, description, attack, hp, maxHp, abilities, traits, location, level } = card;
+    const displayState = calcDisplayState(card);
     const hpRatio = hp / maxHp;
     const abilitiesAndTraits = [...abilities, ...traits];
     const hpColor = `rgb(${Math.floor(255 * (1 - hpRatio))}, 0, 0)`;
@@ -40,7 +48,9 @@ export function UnitCardView({
             ? "🪦"
             : null;
 
-    const borderColor = card.owner == PEOPLE.PLAYER ? "blue" : card.owner == PEOPLE.ENEMY ? "red" : undefined;
+    const borderColor = card.owner == gs.player ? "blue" : card.owner == gs.enemy ? "red" : undefined;
+
+    const levelIcon = levelIcons[level] ?? "";
 
     return (
         <CardWrapper
@@ -52,7 +62,7 @@ export function UnitCardView({
             }}
             isSelected={isSelected}
             isTargeted={isTargeted}
-            title={name}
+            title={`${levelIcon}${name}`}
             description={description}
             displayState={displayState}
             borderColor={borderColor}

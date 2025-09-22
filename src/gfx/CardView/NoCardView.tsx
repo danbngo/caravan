@@ -1,7 +1,7 @@
-import { CardLocation } from "../classes/CardLocation";
-import { CardDisplayState } from "../enums";
+import { CardLocation } from "../../classes/CardLocation";
+import { CardDisplayState } from "../../enums";
+import { CardClickHandler } from "../Common/types";
 import { CardWrapper } from "./CardWrapper";
-import { CardClickHandler } from "./interfaces";
 
 export function NoCardView({
     cardLocation,

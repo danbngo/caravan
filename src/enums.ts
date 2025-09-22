@@ -4,17 +4,19 @@ export enum CardAction {
     Withdraw = "Withdraw",
     Wait = "Wait",
     Un_Wait = "Un-Wait",
-    Draw = "Draw"
+    Place = "Place"
 }
 
 export enum TurnAction {
+    Redraw = "Redraw",
     EndTurn = "EndTurn"
 }
 
 export enum DeckArea {
-    Hand = "Hand",
+    Line = "Line",
     General = "General",
     Reserves = "Reserves",
+    Hand = "Hand",
     Grave = "Grave"
 }
 
@@ -25,10 +27,3 @@ export enum CardDisplayState {
     Dead = "Dead",
     Empty = "Empty"
 }
-
-/*export enum CardPosition {
-    Hand = "Hand",
-    General = "General",
-    Reserve = "Reserve",
-    Grave = "Grave"
-}*/

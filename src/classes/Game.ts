@@ -1,35 +1,24 @@
-import { PEOPLE } from "../defs/PEOPLE";
-import { AI } from "./AI";
 import { Board } from "./Board";
-import { Deck } from "./Deck";
-import { Move } from "./Move";
+import { Person } from "./Person";
 
 export class Game {
-    playerDeck: Deck;
+    player: Person;
+    messages: string[];
     board: Board;
-    enemyAI: AI;
 
     constructor() {
-        this.playerDeck = new Deck();
-        this.board = new Board({ playerDeck: this.playerDeck });
-        this.enemyAI = new AI({ board: this.board, person: PEOPLE.ENEMY });
+        this.player = new Person({ name: "Player" });
+        this.messages = ["Game started."];
+        this.board = new Board({ enemy: new Person({ name: "" }), player: this.player });
     }
 
-    async handleEnemyTurn(betweenEnemyActions: () => Promise<void>) {
-        if (!this.enemyAI) throw new Error("Enemy AI not loaded");
-        let attemptsRemaining = 100;
-        while (this.board.turn == PEOPLE.ENEMY && attemptsRemaining-- > 0) {
-            await betweenEnemyActions();
-            if (attemptsRemaining <= 0) throw new Error("too many actions for enemy turn!");
-            this.handleEnemyAction();
-        }
-        betweenEnemyActions();
-    }
+    addMessage = (msg: string) => {
+        console.log("this:", this);
+        this.messages.push(msg);
+    };
 
-    handleEnemyAction() {
-        const choice = this.enemyAI.chooseMove();
-        if (choice instanceof Move) this.board.processMove(choice);
-        else this.board.processTurnAction(choice);
+    get enemy() {
+        return this.board.enemy;
     }
 }
 

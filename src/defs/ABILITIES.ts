@@ -14,11 +14,12 @@ export const ABILITIES = {
     ASSASSINATE: new Ability("Assassinate", "🥷", `Do 2x damage vs wounded enemies.`),
     FRENZY: new Ability("Frenzy", "😡", "Immediately attack back in ⚔️ after being attacked in ⚔️."),
     //TACTICIAN: new Ability("Tactician", "", "When defending, disable the attacker's abilities."),
-    MECHANIC: new Ability("Mechanic", "🛠️", "At round's end, heal adjacent contraptions for 1 hp."),
-    MEDIC: new Ability("Medic", "❤️‍🩹", "At round's end, heal adjacent living for 1 hp."),
-    INFECT: new Ability("Infect", "🦠", "After slaying a foe, convert it to a copy of this card (added to your reserves)."),
+    MECHANIC: new Ability("Mechanic", "🛠️", "At round's end, heal adjacent 🛞 for 2 hp."),
+    MEDIC: new Ability("Medic", "❤️‍🩹", "At round's end, heal adjacent ❤️ for 2 hp."),
+    INFECT: new Ability("Infect", "🦠", "After slaying a ❤️ foe, convert it to a copy of this card (added to your reserves)."),
     CAPTIVATE: new Ability("Captivate", "🎻", "Foes directly opposite this one cannot withdraw or swap."),
-    LEECH: new Ability("Leech", "🧛", "Aftering sending a foe to the grave, recover the amount of damage dealt.")
+    LEECH: new Ability("Leech", "🧛", "After slaying a ❤️ foe, recover the amount of damage dealt."),
+    STEALTHY: new Ability("Stealthy", "🥷", "Can bypass 🗿/🏰.")
 };
 export const ALL_ABILITIES = Object.values(ABILITIES);
 export type AbilityID = keyof typeof ABILITIES;

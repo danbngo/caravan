@@ -4,14 +4,13 @@ import { randomMemberOfArray } from "./utils/rndUtils";
 import { UnitCard } from "./classes/UnitCard";
 import { gs } from "./classes/Game";
 import { Board } from "./classes/Board";
-import { AI } from "./classes/AI";
-import { PEOPLE } from "./defs/PEOPLE";
 import { Person } from "./classes/Person";
+import { TurnSystem } from "./systems/TurnSystem";
 
 function makeRandomDeck(owner: Person) {
     const general = GENERAL_CARDS.GENERAL;
     const units: Set<UnitCard> = new Set();
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 30; i++) {
         const card = randomMemberOfArray(ALL_UNIT_CARDS);
         units.add(card);
     }
@@ -19,12 +18,15 @@ function makeRandomDeck(owner: Person) {
 }
 
 export function startTestGame() {
-    gs.playerDeck = makeRandomDeck(PEOPLE.PLAYER);
+    gs.player = new Person({ name: "Player", gold: 0, maxMp: 10 });
+    gs.player.deck = makeRandomDeck(gs.player);
 
     gs.board = new Board({
-        playerDeck: gs.playerDeck,
-        enemyDeck: makeRandomDeck(PEOPLE.ENEMY)
+        enemy: new Person({ name: "Enemy", gold: 0, maxMp: 10 }),
+        player: gs.player
     });
 
-    gs.enemyAI = new AI({ board: gs.board, person: PEOPLE.ENEMY });
+    gs.enemy.deck = makeRandomDeck(gs.enemy);
+
+    TurnSystem.startTurn(gs.player);
 }

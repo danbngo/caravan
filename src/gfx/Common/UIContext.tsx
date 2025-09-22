@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useState } from "react";
-import { CardAction } from "../enums";
-import { CardLocations } from "../classes/CardLocations";
-import { CardLocation } from "../classes/CardLocation";
+import { CardAction } from "../../enums";
+import { CardLocations } from "../../classes/CardLocations";
+import { CardLocation } from "../../classes/CardLocation";
 
 interface UIState {
     selectedCardLocation?: CardLocation | undefined;

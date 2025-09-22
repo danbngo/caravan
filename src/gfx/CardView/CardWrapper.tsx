@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { CardDisplayState } from "../enums";
+import { CardDisplayState } from "../../enums";
 
 export function CardWrapper({
     onClick,
@@ -47,7 +47,7 @@ export function CardWrapper({
           ? "shadow-lg shadow-yellow-400"
           : "shadow-lg shadow-gray-100";
 
-    const titleIcon =
+    /*const titleIcon =
         displayState == CardDisplayState.Tapped
             ? "🛡️"
             : displayState == CardDisplayState.Idle
@@ -56,10 +56,10 @@ export function CardWrapper({
                 ? "💀"
                 : displayState == CardDisplayState.Empty
                   ? "⋯"
-                  : "";
+                  : "";*/
 
     return (
-        <div className={`relative w-24 h-36`}>
+        <div className={`relative w-28 h-36`}>
             {crown ? <div className="z-50 absolute left-1/2 -translate-x-1/2 -top-[24px]">{crown}</div> : null}
             <div className={`z-10 absolute h-full w-full inset-0 rounded-xl ${bgColorClass}`}></div>
             <div className="z-20 absolute h-full w-full inset-0 rounded-xl" style={{ background: redTintColor }} />
@@ -72,9 +72,7 @@ export function CardWrapper({
         relative z-30 h-full w-full p-2 border rounded-xl ${borderColorClass} ${shadowColorClass}
     `}
             >
-                {title ? (
-                    <div className="text-sm text-center cursor-pointer" title={description || ""}>{`${title}${titleIcon}`}</div>
-                ) : null}
+                {title ? <div className="text-xs cursor-pointer" title={description || ""}>{`${title}`}</div> : null}
                 {children}
             </div>
         </div>

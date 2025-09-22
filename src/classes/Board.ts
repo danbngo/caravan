@@ -1,38 +1,30 @@
 import { CardAction, DeckArea, TurnAction } from "../enums";
-import { attackCard, calcAttackableLocations, canAttack } from "../sys/attack";
-import { calcPlaceableLocations, canDraw, drawCard } from "../sys/draw";
-import { canWithdraw, withdrawCard } from "../sys/withdraw";
-import { calcSwappableLocations, canSwap, swapCard } from "../sys/swap";
 import { CardLocations } from "./CardLocations";
-import { Deck } from "./Deck";
 import { Move } from "./Move";
 import { UnitCard } from "./UnitCard";
-import { unwaitCard, waitCard } from "../sys/wait";
-import { PEOPLE } from "../defs/PEOPLE";
 import { Person } from "./Person";
+import { AI } from "./AI";
+import { SwapSystem } from "../systems/SwapSystem";
+import { PlacementSystem } from "../systems/PlacementSystem";
+import { WithdrawSystem } from "../systems/WithdrawSystem";
+import { WaitSystem } from "../systems/WaitSystem";
+import { AttackSystem } from "../systems/AttackSystem";
+import { TurnSystem } from "../systems/TurnSystem";
+import { DrawSystem } from "../systems/DrawSystem";
 
 export class Board {
-    playerDeck: Deck;
-    enemyDeck: Deck;
-    //playerCardDrawn: boolean;
-    //enemyCardDrawn: boolean;
+    player: Person;
+    enemy: Person;
+    enemyAI: AI;
     turn: Person;
     round: number;
-    messages: string[];
 
-    constructor({ playerDeck, enemyDeck }: { playerDeck?: Deck; enemyDeck?: Deck } = {}) {
-        this.playerDeck = playerDeck || new Deck();
-        this.enemyDeck = enemyDeck || new Deck();
-        this.turn = PEOPLE.PLAYER;
+    constructor({ enemy, player }: { enemy: Person; player: Person }) {
+        this.player = player;
+        this.enemy = enemy;
+        this.turn = player;
         this.round = 0; //need to manually start player turn
-        //this.playerCardDrawn = false;
-        //this.enemyCardDrawn = false;
-        this.messages = ["Game started."];
-        this.playerDeck.reset();
-        this.enemyDeck.reset();
-        this.playerDeck.owner.mp = 0;
-        this.enemyDeck.owner.mp = 0;
-        this.startTurn(PEOPLE.PLAYER);
+        this.enemyAI = new AI({ board: this, person: this.enemy });
     }
 
     calcCardMetadata(card: UnitCard) {
@@ -40,122 +32,112 @@ export class Board {
         if (!owner || !location) throw new Error("card must have an owner and location");
         const { index, deckArea } = location;
         const personMetadata = this.calcPersonMetadata(owner);
-        const foeCard = deckArea == DeckArea.Hand ? personMetadata.foeDeck.hand.cards[index] : undefined;
+        const foeCard = deckArea == DeckArea.Line ? personMetadata.foeDeck.line.cards[index] : undefined;
         return { ...personMetadata, owner, location, card, deckArea, index, foeCard };
     }
 
-    addMessage(msg: string) {
-        this.messages.push(msg);
-    }
-
-    endTurn(person: Person) {
-        console.log("ending turn for:", person);
-        const { deck, foe } = this.calcPersonMetadata(person);
-        console.log("foe:", foe);
-        for (const card of deck.hand.cards) {
-            if (card && !card.tapped) {
-                if (card?.traitIDs.includes("LIVING")) card.heal(1);
-            }
-        }
-        this.addMessage(`${person} turn: ended.`);
-        this.startTurn(foe);
-    }
-
-    startTurn(person: Person) {
-        this.turn = person;
-        const { deck } = this.calcPersonMetadata(person);
-        deck.owner.healMp(1);
-        for (const card of deck.units) card.untap();
-        if (person == PEOPLE.PLAYER) {
-            this.round++;
-            this.addMessage(`...Round ${this.round}...`);
-        }
-        this.addMessage(`${person} turn: started.`);
-    }
-
-    calcValidReserveMoves(person: Person) {
-        const moves: Move[] = [];
-        const { deck } = this.calcPersonMetadata(person);
-        const { reserves } = deck;
-        const nextReserve = reserves.cards[0];
-        if (!nextReserve) return [];
-        if (canDraw(this, nextReserve)) {
-            const placeableLocations = calcPlaceableLocations(this, person);
-            for (const pl of placeableLocations.locations) {
-                moves.push(new Move(CardAction.Draw, nextReserve, pl));
-            }
-        }
-        return moves;
+    calcPersonMetadata(person: Person) {
+        const foe = person == this.enemy ? this.player : this.enemy;
+        const deck = person == this.enemy ? this.enemy.deck : this.player.deck;
+        const foeDeck = person == this.enemy ? this.player.deck : this.enemy.deck;
+        const { general } = deck;
+        //const cardDrawn = person == this.player ? this.playerCardDrawn : this.enemyCardDrawn;
+        return { person, foe, deck, foeDeck, general };
     }
 
     calcValidHandMoves(person: Person) {
         const moves: Move[] = [];
         const { deck } = this.calcPersonMetadata(person);
-        for (const card of deck.hand.cards) {
+        const { hand } = deck;
+        for (const card of hand.cards) {
+            if (!card) continue;
+            if (!PlacementSystem.canPlace(card)) continue;
+            const placeableLocations = PlacementSystem.calcPlaceableLocations(person);
+            for (const pl of placeableLocations.locations) {
+                moves.push(new Move(CardAction.Place, card, pl));
+            }
+        }
+        return moves;
+    }
+
+    calcValidLineMoves(person: Person) {
+        const moves: Move[] = [];
+        const { deck } = this.calcPersonMetadata(person);
+        for (const card of deck.line.cards) {
             if (!card || card.tapped || card.dead || card.waiting) continue;
             const [caIDs] = [card.abilityIDs];
             console.log(caIDs);
-            if (canWithdraw(this, card)) {
+            if (WithdrawSystem.canWithdraw(card)) {
                 moves.push(new Move(CardAction.Withdraw, card));
             }
-            if (canAttack(card)) {
+            if (AttackSystem.canAttack(card)) {
                 const validAttackLocations = this.calcTargetableLocations(card, CardAction.Attack).locations;
                 for (const i of validAttackLocations) {
-                    //const targetCard = this.playerDeck.hand.cards[i.index];
+                    //const targetCard = this.player.deck.line.cards[i.index];
                     moves.push(new Move(CardAction.Attack, card, i));
                 }
             }
-            if (canSwap(this, card)) {
+            if (SwapSystem.canSwap(card)) {
                 const validMoveLocations = this.calcTargetableLocations(card, CardAction.Swap).locations;
                 for (const i of validMoveLocations) {
-                    //const targetCard = this.playerDeck.hand.cards[i.index];
+                    //const targetCard = this.player.deck.line.cards[i.index];
                     moves.push(new Move(CardAction.Swap, card, i));
                 }
             }
         }
-        //if (moves.length == 0) moves.push(new Move(TurnAction.EndTurn));
         return moves;
     }
 
     processMove(move: Move) {
         console.log("process move called:", move);
         const { action } = move;
-        if (action == CardAction.Draw) {
-            drawCard(this, move);
+        if (action == CardAction.Place) {
+            PlacementSystem.placeCard(move);
         } else if (action == CardAction.Swap) {
-            swapCard(this, move);
+            SwapSystem.swapCard(move);
         } else if (action == CardAction.Withdraw) {
-            withdrawCard(this, move);
+            WithdrawSystem.withdrawCard(move);
         } else if (action == CardAction.Attack) {
-            attackCard(this, move);
+            AttackSystem.attackCard(move);
         } else if (action == CardAction.Wait) {
-            waitCard(move.card);
+            WaitSystem.waitCard(move.card);
         } else if (action == CardAction.Un_Wait) {
-            unwaitCard(move.card);
+            WaitSystem.unwaitCard(move.card);
         } else throw new Error("unrecognized action type");
     }
 
-    processTurnAction(turnAction: TurnAction) {
+    processTurnAction(person: Person, turnAction: TurnAction) {
         if (turnAction == TurnAction.EndTurn) {
-            this.endTurn(this.turn);
+            TurnSystem.endTurn(person);
+        } else if (turnAction == TurnAction.Redraw) {
+            DrawSystem.redraw(person);
         } else throw new Error("unrecognized action type");
     }
-
-    calcPersonMetadata(person: Person) {
-        const foe = person == PEOPLE.ENEMY ? PEOPLE.PLAYER : PEOPLE.ENEMY;
-        const deck = person == PEOPLE.ENEMY ? this.enemyDeck : this.playerDeck;
-        const foeDeck = person == PEOPLE.ENEMY ? this.playerDeck : this.enemyDeck;
-        const { general } = deck;
-        //const cardDrawn = person == PEOPLE.PLAYER ? this.playerCardDrawn : this.enemyCardDrawn;
-        return { person, foe, deck, foeDeck, general };
-    }
-
     calcTargetableLocations(card: UnitCard, cardAction: CardAction): CardLocations {
-        if (cardAction == CardAction.Swap) return calcSwappableLocations(this, card);
-        else if (cardAction == CardAction.Attack) return calcAttackableLocations(this, card);
-        else if (cardAction == CardAction.Draw)
-            return !card.owner ? new CardLocations([]) : calcPlaceableLocations(this, card.owner);
+        if (cardAction == CardAction.Swap) return SwapSystem.calcSwappableLocations(card);
+        else if (cardAction == CardAction.Attack) return AttackSystem.calcAttackableLocations(card);
+        else if (cardAction == CardAction.Place)
+            return !card.owner ? new CardLocations([]) : PlacementSystem.calcPlaceableLocations(card.owner);
         else if (cardAction == CardAction.Wait) return new CardLocations([]);
         else throw new Error("unrecognized card action!");
     }
+
+    handleEnemyTurn = async (betweenEnemyActions: () => Promise<void>) => {
+        console.log("handling enemy turn");
+        if (!this.enemyAI) throw new Error("Enemy AI not loaded");
+        let attemptsRemaining = 100;
+        while (this.turn == this.enemy && attemptsRemaining-- > 0) {
+            await betweenEnemyActions();
+            if (attemptsRemaining <= 0) throw new Error("too many actions for enemy turn!");
+            this.handleEnemyAction();
+        }
+        betweenEnemyActions();
+    };
+
+    handleEnemyAction = () => {
+        const choice = this.enemyAI.chooseMove();
+        console.log("enemy choice:", choice);
+        if (choice instanceof Move) this.processMove(choice);
+        else this.processTurnAction(this.enemy, choice);
+    };
 }

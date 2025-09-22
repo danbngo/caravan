@@ -7,13 +7,12 @@ export const TRAITS = {
     DEMONIC: new Trait("Demonic", "😈", "Take no damage from 🔥."),
     DIVINE: new Trait("Divine", "🙏", "Do 2x damage to 💀/😈. If slain, they are removed from the game."),
     FIERY: new Trait("Fiery", "🔥", "Do 2x damage to 💀/🛞."),
-    BUILDING: new Trait("Building", "🏰", "Take 1/2 damage from non-🛞/🗿. Cannot attack, withdraw, or swap."),
+    BUILDING: new Trait("Building", "🏰", "Absorbs attacks at adjacent units. Cannot attack, withdraw, or swap."),
     CONTRAPTION: new Trait("Contraption", "🛞", "Do 2x damage to 🏰/🗿."),
 
     //physical traits
     FLYING: new Trait("Flying", "🪽", "Can bypass non-🪽/🗿."),
     GIANT: new Trait("Giant", "🗿", "Do 2x damage to 🏰."),
-    STEALTHY: new Trait("Stealthy", "🥷", "Can bypass 🗿/🏰."),
 
     //mental traits
     OATH: new Trait("Oath", "🎖️", "Cannot withdraw."),
