@@ -20,18 +20,18 @@ const levelIcons: Record<number, string> = {
     4: "4️⃣",
     5: "5️⃣",
     6: "6️⃣",
-    7: "7️⃣",
-    8: "8️⃣"
+    7: "7️⃣"
+    //8: "8️⃣"
 };
 
 export function UnitCardView({
     card,
-    onClick,
+    onClickCard,
     isSelected,
     isTargeted
 }: {
     card: UnitCard;
-    onClick?: CardClickHandler | undefined;
+    onClickCard?: CardClickHandler | undefined;
     isSelected?: boolean | undefined;
     isTargeted?: boolean | undefined;
 }) {
@@ -58,7 +58,7 @@ export function UnitCardView({
             redTint={1 - hpRatio}
             onClick={() => {
                 console.log("unit card onclick");
-                if (onClick) onClick(location);
+                if (onClickCard) onClickCard(card);
             }}
             isSelected={isSelected}
             isTargeted={isTargeted}

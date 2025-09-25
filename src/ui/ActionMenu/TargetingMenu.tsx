@@ -1,9 +1,9 @@
 import { ActionButton } from "../Common/ActionButton";
 import { useContext } from "react";
-import { UIStateContext } from "../Common/UIContext";
+import { UIContext } from "../UIContext";
 
 export function TargetingMenu() {
-    const { targetingAction, setTargetingAction, setTargetCardLocations } = useContext(UIStateContext);
+    const { targetingAction, setTargetingAction, setTargetCardLocations } = useContext(UIContext);
 
     return (
         <div className="flex w-full items-center justify-between p-4">

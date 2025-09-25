@@ -42,10 +42,10 @@ export function CardWrapper({
               : "bg-gray-100";
 
     const shadowColorClass = isSelected
-        ? "shadow-lg shadow-green-400"
+        ? "shadow-md shadow-green-500"
         : isTargeted
-          ? "shadow-lg shadow-yellow-400"
-          : "shadow-lg shadow-gray-100";
+          ? "shadow-md shadow-yellow-500"
+          : "shadow-md shadow-gray-900";
 
     /*const titleIcon =
         displayState == CardDisplayState.Tapped

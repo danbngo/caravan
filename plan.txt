@@ -1,12 +1,36 @@
+UP NEXT:
+character creation system
+-choose a general card + some initial unit cards that get paired with him
+
+city system
+-hire additional units
+-buy some trade goods to sell in the next town
+-sell trade goods from the previous town
+
+travel system
+-choose your next destination
+-leave town
+-get random encounters (attacks) en route to destination
+
+
+
+LATER:
+-more than one race - orcs, elves, undead, etc.
+-procedurally generated cities, routes
+-buy/learn, and cast spells
+-your general can level up, gaining more hp, mp, higher "unit card cap"
+-equipment cards?
+
+
+
+
+------
+
 i'm going to describe a game. i want to use some of the components from that ui package to make the ui for this game.
 
 i'll describe the game, please memorize the game details and then i'll ask you to perform some tasks.
 
 caravan - a game about guarding a fantasy world caravan as it moves across some fantasy silk road equivalent ending in a paradisical merchant city at the end of the line. on the way, you encounter hazards, enemies, raiders, monsters etc but also cool opportunities to explore ruins, trade with other merchants, recruit hirelings, and other miscellaneous experiences on the road.
-
-you start by creating a character, or randomly generating one, or maybe picking one of 3 randomly generated ones or creating your own if you prefer.
-
-you can be an orc, elf, human, dwarf, etc. and choose a character class like fighter, thief.
 
 you are presumed to be the head of the caravan. the caravan is also upgradeable, it can move faster with better pack animals, carry more stuff/goods, more people/hirelings, have higher defense or automated defenses, and so on.
 

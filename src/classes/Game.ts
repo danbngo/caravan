@@ -3,8 +3,8 @@ import { Person } from "./Person";
 
 export class Game {
     player: Person;
-    messages: string[];
     board: Board;
+    messages: string[];
 
     constructor() {
         this.player = new Person({ name: "Player" });

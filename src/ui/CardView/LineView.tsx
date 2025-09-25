@@ -1,21 +1,22 @@
-import { CardLocation } from "../../classes/CardLocation";
 import { CardLocations } from "../../classes/CardLocations";
 import { Deck } from "../../classes/Deck";
 import { UnitCard } from "../../classes/UnitCard";
 import { DeckArea } from "../../enums";
 import { CardView } from "./CardView";
-import { CardClickHandler } from "../Common/types";
+import { CardClickHandler, LocationClickHandler } from "../Common/types";
 
 export function LineView({
     deck,
     cards,
-    onClick,
+    onClickCard,
+    onClickLocation,
     selectedCardIndex,
     targetCardLocations
 }: {
     deck: Deck;
     cards: (UnitCard | undefined)[];
-    onClick?: CardClickHandler | undefined;
+    onClickCard?: CardClickHandler | undefined;
+    onClickLocation?: LocationClickHandler | undefined;
     selectedCardIndex?: number | undefined;
     targetCardLocations?: CardLocations | undefined;
 }) {
@@ -26,10 +27,8 @@ export function LineView({
                     key={index}
                     isSelected={selectedCardIndex == index}
                     isTargeted={targetCardLocations?.hasIndex(deck, DeckArea.Line, index)}
-                    onClick={() => {
-                        console.log("handview onclick");
-                        if (onClick) onClick(new CardLocation(deck, DeckArea.Line, index));
-                    }}
+                    onClickCard={onClickCard}
+                    onClickLocation={onClickLocation}
                     card={card}
                 />
             ))}

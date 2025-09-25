@@ -1,17 +1,17 @@
 import "./index.css";
 import { createRoot } from "react-dom/client";
-import { CombatBoard } from "./gfx/CombatBoard/CombatBoard";
-import { UIStateContextProvider } from "./gfx/Common/UIContext";
+import { UIContextProvider } from "./ui/UIContext";
 import { startTestGame } from "./test";
+import { GameView } from "./ui/GameView";
 
 startTestGame();
 
 function App() {
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 via-gray-200 to-teal-100">
-            <UIStateContextProvider>
-                <CombatBoard />
-            </UIStateContextProvider>
+            <UIContextProvider>
+                <GameView />
+            </UIContextProvider>
         </div>
     );
 }

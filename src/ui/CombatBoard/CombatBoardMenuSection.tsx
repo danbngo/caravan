@@ -1,36 +1,35 @@
 import { CardActionMenu } from "../ActionMenu/CardActionMenu";
 import { TurnMenu } from "../ActionMenu/TurnMenu";
 import { useContext } from "react";
-import { UIStateContext } from "../Common/UIContext";
-import { CardLocation } from "../../classes/CardLocation";
+import { UIContext } from "../UIContext";
 import { CardAction, TurnAction } from "../../enums";
 import { gs } from "../../classes/Game";
 import { Move } from "../../classes/Move";
 import { TargetingMenu } from "../ActionMenu/TargetingMenu";
+import { CardClickHandler } from "../Common/types";
 
 export function CombatBoardMenuSection({
     onClickCard,
     forceRefresh
 }: {
-    onClickCard: (cl: CardLocation) => void;
+    onClickCard: CardClickHandler;
     forceRefresh: () => void;
 }) {
-    const { selectedCardLocation, targetingAction, setTargetingAction, setTargetCardLocations } = useContext(UIStateContext);
+    const { selectedCard, targetingAction, setTargetingAction, setTargetCardLocations } = useContext(UIContext);
     const { turn } = gs.board;
 
     function onClickCardAction(action: CardAction) {
         console.log("combat board: card action clicked:", action);
-        if (!selectedCardLocation || !selectedCardLocation.card) return;
-        const { card } = selectedCardLocation;
+        if (!selectedCard) return;
 
         if (action == CardAction.Swap || action == CardAction.Attack || action == CardAction.Place) {
             setTargetingAction(action);
-            const _targetCardLocations = gs.board.calcTargetableLocations(card, action);
+            const _targetCardLocations = gs.board.calcTargetableLocations(selectedCard, action);
             console.log("setting target card locations:", _targetCardLocations);
             setTargetCardLocations(_targetCardLocations);
-        } else gs.board.processMove(new Move(action, card));
+        } else gs.board.processMove(new Move(action, selectedCard));
         //reselect the acting card
-        onClickCard(selectedCardLocation);
+        onClickCard(selectedCard);
         //setRefreshTrigger(Math.random());
         forceRefresh();
     }
@@ -54,7 +53,7 @@ export function CombatBoardMenuSection({
 
     if (targetingAction && turn == gs.player) {
         return <TargetingMenu />;
-    } else if (selectedCardLocation?.person == gs.player && turn == gs.player) {
+    } else if (selectedCard?.owner == gs.player && turn == gs.player) {
         return (
             <div className="flex w-full items-center justify-between p-4">
                 <CardActionMenu onAction={onClickCardAction} />

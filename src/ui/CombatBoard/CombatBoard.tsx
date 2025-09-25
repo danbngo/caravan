@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { LineSeparator } from "../Common/LineSeperator";
-import { UIStateContext } from "../Common/UIContext";
+import { UIContext } from "../UIContext";
 import { CardAction } from "../../enums";
 import { MessagesView } from "./MessagesView";
 import { gs } from "../../classes/Game";
@@ -10,16 +10,11 @@ import { CombatBoardHandSection } from "./CombatBoardHandSection";
 import { OnActClickHandler } from "../Common/types";
 import { CombatBoardMenuSection } from "./CombatBoardMenuSection";
 import { CombatBoardPersonSection } from "./CombatBoardPersonSection";
+import { UnitCard } from "../../classes/UnitCard";
 
 export function CombatBoard() {
-    const {
-        setTargetingAction,
-        setSelectedCardLocation,
-        setTargetCardLocations,
-        targetingAction,
-        targetCardLocations,
-        selectedCardLocation
-    } = useContext(UIStateContext);
+    const { setTargetingAction, setSelectedCard, setTargetCardLocations, targetingAction, targetCardLocations, selectedCard } =
+        useContext(UIContext);
 
     const { enemy, player } = gs;
     const [refreshTrigger, setRefreshTrigger] = useState<number>();
@@ -27,32 +22,34 @@ export function CombatBoard() {
 
     console.log(refreshTrigger);
 
-    function onClickCard(cardLocation: CardLocation) {
-        const { deck, deckArea, index } = cardLocation;
+    function onClick(item: UnitCard | CardLocation) {
+        const location = item instanceof UnitCard ? item.location : item;
+        if (!location) return;
+        const { deck, deckArea, index } = location;
         console.log("combat board: card clicked", deck, deckArea, index);
         if (onActClickHandlerRef.current) onActClickHandlerRef.current(deck, deckArea, index);
-        else setSelectedCardLocation(new CardLocation(deck, deckArea, index || 0));
+        else if (item instanceof UnitCard) setSelectedCard(item);
         setRefreshTrigger(Math.random());
     }
 
     function startTargetingCardAction() {
         onActClickHandlerRef.current = (deck, deckArea, index) => {
-            if (!targetCardLocations || !targetingAction || !selectedCardLocation || !selectedCardLocation.card) return;
+            if (!targetCardLocations || !targetingAction || !selectedCard) return;
             if (!targetCardLocations.hasIndex(deck, deckArea, index || 0)) return;
-            const move: Move = new Move(targetingAction, selectedCardLocation.card, new CardLocation(deck, deckArea, index || 0));
+            const move: Move = new Move(targetingAction, selectedCard, new CardLocation(deck, deckArea, index || 0));
             gs.board.processMove(move);
             onActClickHandlerRef.current = undefined;
             setTargetCardLocations();
             setTargetingAction();
             //edge case logic. think about fixing this later.
             if (move.action == CardAction.Swap) {
-                setSelectedCardLocation(move.targetLocation);
+                setSelectedCard(move.card);
             }
         };
     }
 
     useEffect(() => {
-        if (selectedCardLocation && selectedCardLocation.card && targetingAction) startTargetingCardAction();
+        if (selectedCard && selectedCard && targetingAction) startTargetingCardAction();
     }, [targetingAction, targetCardLocations]);
 
     return (
@@ -61,13 +58,13 @@ export function CombatBoard() {
                 <MessagesView messages={gs.messages} />
             </div>
             <div className="flex-1">
-                <CombatBoardPersonSection deck={enemy.deck} onClickCard={onClickCard} />
+                <CombatBoardPersonSection deck={enemy.deck} onClickCard={onClick} onClickLocation={onClick} />
                 <LineSeparator />
-                <CombatBoardPersonSection deck={player.deck} onClickCard={onClickCard} />
+                <CombatBoardPersonSection deck={player.deck} onClickCard={onClick} onClickLocation={onClick} />
                 <LineSeparator />
-                <CombatBoardHandSection deck={player.deck} onClickCard={onClickCard} />
+                <CombatBoardHandSection deck={player.deck} onClickCard={onClick} />
                 <LineSeparator />
-                <CombatBoardMenuSection onClickCard={onClickCard} forceRefresh={() => setRefreshTrigger(Math.random())} />
+                <CombatBoardMenuSection onClickCard={onClick} forceRefresh={() => setRefreshTrigger(Math.random())} />
             </div>
         </div>
     );

@@ -1,12 +1,12 @@
 import { useContext } from "react";
-import { CardLocation } from "../../classes/CardLocation";
-import { UIStateContext } from "../Common/UIContext";
+import { UIContext } from "../UIContext";
 import { DeckArea } from "../../enums";
 import { Deck } from "../../classes/Deck";
 import { HandView } from "../CardView/HandView";
+import { CardClickHandler } from "../Common/types";
 
-export function CombatBoardHandSection({ deck, onClickCard }: { deck: Deck; onClickCard: (cl: CardLocation) => void }) {
-    const { selectedCardLocation, targetCardLocations } = useContext(UIStateContext);
+export function CombatBoardHandSection({ deck, onClickCard }: { deck: Deck; onClickCard: CardClickHandler }) {
+    const { selectedCard, targetCardLocations } = useContext(UIContext);
 
     const { owner } = deck;
 
@@ -18,11 +18,9 @@ export function CombatBoardHandSection({ deck, onClickCard }: { deck: Deck; onCl
             <HandView
                 deck={deck}
                 cards={deck.hand.cards}
-                onClick={(i) => i && onClickCard(i)}
+                onClickCard={onClickCard}
                 selectedCardIndex={
-                    selectedCardLocation?.deck.owner == owner && selectedCardLocation?.deckArea == DeckArea.Hand
-                        ? selectedCardLocation.index
-                        : undefined
+                    selectedCard?.owner == owner && selectedCard?.deckArea == DeckArea.Hand ? selectedCard.index : undefined
                 }
                 targetCardLocations={targetCardLocations}
             />

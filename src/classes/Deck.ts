@@ -1,10 +1,10 @@
-import { GENERAL_CARDS } from "../defs/CARDS";
 import { DeckArea } from "../enums";
 import { CardLocation } from "./CardLocation";
 import { CardLine } from "./CardLine";
 import { Person } from "./Person";
 import { CardStack } from "./CardStack";
 import { UnitCard } from "./UnitCard";
+import { GENERAL_CARDS } from "../defs/GENERAL_CARDS";
 
 export class Deck {
     owner: Person;

@@ -1,16 +1,16 @@
 import { CardLocation } from "../../classes/CardLocation";
 import { CardDisplayState } from "../../enums";
-import { CardClickHandler } from "../Common/types";
+import { LocationClickHandler } from "../Common/types";
 import { CardWrapper } from "./CardWrapper";
 
 export function NoCardView({
     cardLocation,
-    onClick,
+    onClickLocation,
     isSelected,
     isTargeted
 }: {
     cardLocation?: CardLocation | undefined;
-    onClick: CardClickHandler | undefined;
+    onClickLocation: LocationClickHandler | undefined;
     isSelected?: boolean | undefined;
     isTargeted?: boolean | undefined;
 }) {
@@ -21,7 +21,7 @@ export function NoCardView({
             title="Empty"
             displayState={CardDisplayState.Empty}
             onClick={() => {
-                if (onClick) onClick(cardLocation);
+                if (onClickLocation && cardLocation) onClickLocation(cardLocation);
             }}
         ></CardWrapper>
     );

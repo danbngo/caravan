@@ -45,6 +45,14 @@ export class UnitCard {
         this.waiting = false;
     }
 
+    get deckArea() {
+        return this.location?.deckArea;
+    }
+
+    get index() {
+        return this.location?.index;
+    }
+
     get abilities() {
         const result: Ability[] = [];
         for (const key in ABILITIES) {
